@@ -3,6 +3,9 @@ using SiMem.DataModel;
 using Windows.UI.Xaml.Controls;
 using Autofac;
 using System;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using System.Diagnostics;
 // Die Elementvorlage "Inhaltsdialog" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
 namespace SiMem.View
@@ -20,6 +23,7 @@ namespace SiMem.View
     /// </summary>
     public sealed partial class AddItemPage : ContentDialog
     {
+       
         public static int EDIT_MODE = 0;
         public static int ADD_MODE = 1;
         /// <summary>
@@ -49,6 +53,9 @@ namespace SiMem.View
         /// <param name="memory">Memory Object was geladen wird</param>
         public AddItemPage(int mode, Memory memory)
         {
+            // Subscribe keyboardTimer Tick event
+            keyboardTimer.Tick += keyboardTimer_Tick;
+
             this.mode = mode;
             this.memory = memory;
             this.InitializeComponent();
@@ -69,8 +76,6 @@ namespace SiMem.View
             titleText.Text = memory.Title;
             textText.Text = memory.Text;
         }
-
-      
    
         /// <summary>
         /// Der PrimaryButton steht für Speichern. Sind die Felder validiert wird die Memory gespeichert und der Dialog schließt sich
@@ -88,15 +93,25 @@ namespace SiMem.View
             {
                 return;
             }
+
             //Speichern der aktuellen Daten
-            memory.Id = memoryDataSource.GetMax() + 1;
             memory.Text = textText.Text;
-            memory.Datum = DateTime.Now;
             memory.Title = titleText.Text;
-            //TODO löschen, ändern?
-            memory.GroupId = 1;
-            //Speichern in die Datenbank
-            memoryDataSource.Insert(memory);
+            if (mode == ADD_MODE)
+            {
+                memory.Id = memoryDataSource.GetMax() + 1;
+                memory.Datum = DateTime.Now;
+                //TODO löschen, ändern?
+                memory.GroupId = 1;
+                //Einfügen in die Datenbank
+                memoryDataSource.Insert(memory);
+            }
+            else
+            {
+                //Update der Datenbank
+                memoryDataSource.Update(memory);
+            }
+            
             //Setzen des Ergbenisses
             this.Result = AddItemResult.AddItemOK;
             //Schließen des Dialogs
@@ -113,6 +128,53 @@ namespace SiMem.View
             this.Result = AddItemResult.AddItemCancel;
             //Schließen des Dialogs
             this.Hide();
+        }
+        /*---------------------------------------------------------------- TASTATUR STUFF ----------------------------------------------------------------
+        */
+        // Handle InputPane manually so the UI doesn't scroll when the keyboard appears
+        InputPane inputPane = InputPane.GetForCurrentView();
+        // DispatcherTimer to ChangeView() of ScrollViewer
+        DispatcherTimer keyboardTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+
+        private void textText_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            // Subscribe InputPane events to handle UI scrolling
+            inputPane.Showing += this.InputPaneShowing;
+            inputPane.Hiding += this.InputPaneHiding;
+        }
+        private void InputPaneShowing(InputPane sender, InputPaneVisibilityEventArgs e)
+        {
+            // Set EnsuredFocusedElementInView to true so the UI doesn't scroll
+            e.EnsuredFocusedElementInView = true;
+
+            // Set new margins to LayoutRoot (to compensate keyboard)
+            textText.MaxHeight = 80;
+            Debug.WriteLine(textText.MaxHeight);
+
+            // Unsubscribe InputPane Showing event
+            inputPane.Showing -= this.InputPaneShowing;
+        }
+
+        private void InputPaneHiding(InputPane sender, InputPaneVisibilityEventArgs e)
+        {
+            // Set EnsuredFocusedElementInView to false so the UI scrolls
+            e.EnsuredFocusedElementInView = false;
+
+            // Reset LayoutRoot margins
+            textText.MaxHeight = 200;
+
+            // Unsubscribe InputPane Hiding event to handle UI scrolling
+            inputPane.Hiding -= this.InputPaneHiding;
+        }
+        private void keyboardTimer_Tick(object sender, object e)
+        {
+            // Stop timer so it doesn't repeat
+            keyboardTimer.Stop();
+
+            // Invoke ChangeView() on NoteContentScrollViewer, and use GetRectFromCharacterIndex to scroll to caret position
+            if (textText.Text != "")
+                // textScrollView.ChangeView(0, textText.GetRectFromCharacterIndex(textText.SelectionStart - 1, true).Y, null);
+                textScrollView.ChangeView(0, textScrollView.ExtentHeight, null);
         }
     }
 }

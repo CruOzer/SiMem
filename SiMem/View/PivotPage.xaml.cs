@@ -94,7 +94,7 @@ namespace SiMem
         }
 
         /// <summary>
-        /// Fügt der Liste ein Element hinzu, wenn auf die App-Leisten-Schaltfläche geklickt wird.
+        /// Lädt ein Dialog und fügt bei Erfolg der Liste ein Element hinzu, wenn auf die App-Leisten-Schaltfläche geklickt wird.
         /// </summary>
         private async void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
@@ -109,7 +109,7 @@ namespace SiMem
         }
 
         /// <summary>
-        /// Wird aufgerufen, wenn auf ein Element innerhalb eines Abschnitts geklickt wird.
+        /// Wird aufgerufen, wenn auf ein Element innerhalb eines Abschnitts geklickt wird. Lädt die entsprechende Seite
         /// </summary>
         private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
         {
@@ -122,7 +122,7 @@ namespace SiMem
             }
         }
         /// <summary>
-        /// 
+        /// Lädt ein Dialog und editiert bei Erfolg das Listenelement.
         /// </summary>
         private async void ItemView_Edit(object sender, RoutedEventArgs e)
         {

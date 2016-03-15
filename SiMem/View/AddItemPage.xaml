@@ -12,16 +12,11 @@
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
-    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="rootLayout" >
         <TextBox x:Name="titleText" Header="title"/>
-        <TextBox x:Name="textText" Header="content" Height="300px" Margin="0,0,-0.333,0"/>
-
-        <!-- Inhaltsteil -->
-        <TextBlock x:Name="body" Style="{StaticResource MessageDialogContentStyle}" TextWrapping="Wrap">
-            <TextBlock.Text>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            </TextBlock.Text>
-        </TextBlock>
+        <ScrollViewer x:Name="textScrollView" VerticalScrollBarVisibility="Auto">
+            <TextBox x:Name="textText" Header="content" MaxHeight="200" TextWrapping="Wrap"
+        	GotFocus="textText_GotFocus" />
+        </ScrollViewer>
     </StackPanel>
 </ContentDialog>

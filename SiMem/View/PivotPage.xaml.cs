@@ -1,25 +1,12 @@
 ﻿using Autofac;
 using SiMem.Common;
 using SiMem.Data;
-using SiMem.Database;
 using SiMem.DataModel;
+using SiMem.View;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
@@ -31,8 +18,14 @@ namespace SiMem
         private const string FirstGroupName = "FirstGroup";
         private const string SecondGroupName = "SecondGroup";
 
-        private IDataSource<Memory> memDS;
-        private IDataSource<MemoryGroup> memGroupDS;
+        /// <summary>
+        /// Datenbankschnittstelle Memory
+        /// </summary>
+        private IDataSource<Memory> memoryDataSource;
+        /// <summary>
+        /// Datenbankschnittstelle MemoryGroup
+        /// </summary>
+        private IDataSource<MemoryGroup> memoryGroupDataSource;
 
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -47,21 +40,11 @@ namespace SiMem
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
-            memGroupDS = App.Container.Resolve<IDataSource<MemoryGroup>>();
-            memDS =  App.Container.Resolve<IDataSource<Memory>>();
-            //Testdaten
-            memGroupDS.Insert(new MemoryGroup(1, "Hallo"));
-            memGroupDS.Insert(new MemoryGroup(2, "Welt"));
-            memDS.Insert(new Memory(1, 1, "Titel 1", "Inhalt"));
-            memDS.Insert(new Memory(2, 1, "Titel 2", "Inhalt"));
-            memDS.Insert(new Memory(3, 1, "Titel 3", "Inhalt"));
-            memDS.Insert(new Memory(4, 2, "Titel 4", "Inhalt"));
-            memDS.Insert(new Memory(5, 2, "Titel 5", "Inhalt"));
-            loadPivot(1);
-            
+            //Laden der Dependency Injects der Datenbankschnittstellen
+            memoryGroupDataSource = App.Container.Resolve<IDataSource<MemoryGroup>>();
+            memoryDataSource =  App.Container.Resolve<IDataSource<Memory>>();
         }
-
+ 
         /// <summary>
         /// Ruft den <see cref="NavigationHelper"/> ab, der mit dieser <see cref="Page"/> verknüpft ist.
         /// </summary>
@@ -92,9 +75,9 @@ namespace SiMem
         /// beibehalten wurde. Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            loadPivot(1);
+            loadMemories();
         }
-
+       
         /// <summary>
         /// Behält den dieser Seite zugeordneten Zustand bei, wenn die Anwendung angehalten oder
         /// die Seite im Navigationscache verworfen wird. Die Werte müssen den Serialisierungsanforderungen
@@ -111,25 +94,21 @@ namespace SiMem
         /// <summary>
         /// Fügt der Liste ein Element hinzu, wenn auf die App-Leisten-Schaltfläche geklickt wird.
         /// </summary>
-        private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
+        private async void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            string groupName = this.pivot.SelectedIndex == 0 ? FirstGroupName : SecondGroupName;
-            var group = this.DefaultViewModel[groupName] as SampleDataGroup;
-            var nextItemId = group.Items.Count + 1;
-            var newItem = new SampleDataItem(
-                string.Format(CultureInfo.InvariantCulture, "Group-{0}-Item-{1}", this.pivot.SelectedIndex + 1, nextItemId),
-                string.Format(CultureInfo.CurrentCulture, this.resourceLoader.GetString("NewItemTitle"), nextItemId),
-                string.Empty,
-                string.Empty,
-                this.resourceLoader.GetString("NewItemDescription"),
-                string.Empty);
-
-            group.Items.Add(newItem);
-
-            // Verschieben Sie das neue Element per Bildlauf in die Anzeige.
-            var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
-            var listView = container.ContentTemplateRoot as ListView;
-            listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
+            //Starten des Dialogs zum neu Einfügen einer Memory
+            var dialog = new AddItemPage();
+            var result = await dialog.ShowAsync();
+            //Wenn ein neues Element eingefügt wurde, werden die Memories neu geladen 
+            if (dialog.Result == AddItemResult.AddItemOK)
+            {
+                loadMemories();
+                // Verschieben Sie das neue Element per Bildlauf in die Anzeige.
+                var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
+                var listView = container.ContentTemplateRoot as ListView;
+                //Einfügen des neuen Memory Objekts
+                listView.ScrollIntoView(dialog.Memory, ScrollIntoViewAlignment.Leading);
+            }
         }
 
         /// <summary>
@@ -151,14 +130,16 @@ namespace SiMem
         /// </summary>
         private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
         {
-            loadPivot(2);
+            return;
         }
 
-        private void loadPivot(int groupId)
+        /// <summary>
+        /// Laden alle Memories
+        /// </summary>
+        private void loadMemories()
         {
-            MemoryGroup memGroup = memGroupDS.GetById(groupId);
-            var memory = memDS.GetAll(groupId);
-            this.DefaultViewModel[memGroup.Title] = memory;
+            var memories = memoryDataSource.GetAll(1);
+            this.DefaultViewModel[FirstGroupName] = memories;
         }
 
         #region NavigationHelper-Registrierung

@@ -1,9 +1,12 @@
 ﻿using SQLite;
 using System;
+using System.Collections.Generic;
 
-
-namespace SiMem.DataModel
+namespace SiMem.Data
 {
+    /// <summary>
+    /// Klasse für ein Memory-Objekt
+    /// </summary>
     public class Memory
     {
         public Memory():this("Leerer Titel")
@@ -39,6 +42,9 @@ namespace SiMem.DataModel
         }
 
         private int id;
+        /// <summary>
+        /// Id und PrimaryKey der Memory
+        /// </summary>
         [PrimaryKey,NotNull]
         public int Id
         {
@@ -53,6 +59,9 @@ namespace SiMem.DataModel
             }
         }
         private DateTime datum;
+        /// <summary>
+        /// Zeitpunkt der Memory (Defaultmäßig das Erstellungsdatum)
+        /// </summary>
         [NotNull]
         public DateTime Datum
         {
@@ -67,7 +76,9 @@ namespace SiMem.DataModel
             }
         }
         private string title;
-       
+        /// <summary>
+        /// Titel der Memory
+        /// </summary>
         public string Title
         {
             get
@@ -82,7 +93,9 @@ namespace SiMem.DataModel
         }
 
         private string text;
-
+        /// <summary>
+        /// Inhalt der Memory
+        /// </summary>
         public string Text
         {
             get
@@ -97,6 +110,9 @@ namespace SiMem.DataModel
         }
 
         private int groupId;
+        /// <summary>
+        /// Foreign Key für eine MemoryGroup
+        /// </summary>
         [NotNull]
         public int GroupId
         {

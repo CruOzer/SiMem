@@ -1,5 +1,5 @@
-﻿using SiMem.Database;
-using SiMem.DataModel;
+﻿using SiMem.Data;
+using SiMem.Database;
 using SQLite;
 using System;
 using System.Threading.Tasks;

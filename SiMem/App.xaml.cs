@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using SiMem.Common;
+using SiMem.Data;
 using SiMem.database;
 using SiMem.Database;
 using SiMem.DataModel;
@@ -31,6 +32,7 @@ namespace SiMem
         /// </summary>
         public App()
         {
+            //Instanzieren der Dependency Injects
             initializeContainer();
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
@@ -139,7 +141,9 @@ namespace SiMem
             await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
-
+        /// <summary>
+        /// Instanziert den Dependency Inject Container und beginnt die Datenbankconnection
+        /// </summary>
         private void initializeContainer()
         {
             ContainerBuilder builder = new ContainerBuilder();

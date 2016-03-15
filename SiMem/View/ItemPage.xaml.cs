@@ -1,20 +1,8 @@
 ﻿using SiMem.Common;
 using SiMem.Data;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Windows.Input;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.UI.Xaml;
+using SiMem.DataModel;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
+using Autofac;
 using Windows.UI.Xaml.Navigation;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
@@ -28,14 +16,15 @@ namespace SiMem
     {
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
+        private IDataSource<Memory> memoryDataSource;
 
         public ItemPage()
         {
             this.InitializeComponent();
-
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+            memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
         } 
 
         /// <summary>
@@ -68,9 +57,12 @@ namespace SiMem
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // TODO: Ein geeignetes Datenmodell für die problematische Domäne erstellen, um die Beispieldaten auszutauschen
-            var item = await SampleDataSource.GetItemAsync((string)e.NavigationParameter);
-            this.DefaultViewModel["Item"] = item;
+            //Übergabe der Id der Memory
+            int memoryId = (int)e.NavigationParameter;
+            //Holen der Memory
+            Memory memory = memoryDataSource.GetById(memoryId);
+            //Visualisieren der Memory
+            this.DefaultViewModel["Item"] = memory;
         }
 
         /// <summary>

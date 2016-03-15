@@ -1,7 +1,10 @@
 ﻿using SiMem.database;
-using SiMem.DataModel;
+using SiMem.Data;
 using System.Collections.Generic;
 using System;
+using Autofac;
+using SiMem.DataModel;
+using System.Linq;
 
 namespace SiMem.Database
 {
@@ -12,7 +15,6 @@ namespace SiMem.Database
         public MemoryGroupDataSource(IDBConnection db)
         {
             conn = db.getConnection();
-
         }
 
         public void Delete(MemoryGroup mem)
@@ -59,6 +61,11 @@ namespace SiMem.Database
                     conn.Update(existingMem);
                 });
             }
+        }
+
+        public int GetMax()
+        {
+            return conn.Table<MemoryGroup>().Max(x => x.Id);
         }
     }
 }

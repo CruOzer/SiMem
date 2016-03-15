@@ -1,7 +1,12 @@
 ﻿using System;
 using SQLite;
-namespace SiMem.DataModel
+using System.Collections.Generic;
+
+namespace SiMem.Data
 {
+    /// <summary>
+    /// Klasse für ein MemoryGroup-Objekt
+    /// </summary>
     public class MemoryGroup
     {
         public MemoryGroup():this("Leerer Titel")
@@ -19,6 +24,9 @@ namespace SiMem.DataModel
         }
 
         private int id;
+        /// <summary>
+        /// Id und PrimaryKey der MemoryGroup
+        /// </summary>
         [PrimaryKey,NotNull]
         public int Id
         {
@@ -41,6 +49,9 @@ namespace SiMem.DataModel
             }
         }
         private string title;
+        /// <summary>
+        /// Titel der MemoryGroup
+        /// </summary>
         [NotNull]
         public string Title
         {

@@ -6,6 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:SiMem.Data"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"  
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core" 
+    xmlns:view="using:SiMem.View"
     mc:Ignorable="d"
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -38,6 +41,17 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,9.5">
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="Holding">
+                                        <view:OpenMenuFlyoutAction />
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                                <FlyoutBase.AttachedFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Edit" Click="ItemView_Edit"/>
+                                        <MenuFlyoutItem Text="Delete" Click="ItemView_Delete"/>                                        
+                                    </MenuFlyout>
+                                </FlyoutBase.AttachedFlyout>
                                 <TextBlock
                                     Text="{Binding Title}"
                                     TextWrapping="Wrap"

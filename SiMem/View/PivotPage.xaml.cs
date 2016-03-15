@@ -7,6 +7,8 @@ using System;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
@@ -73,7 +75,7 @@ namespace SiMem
         /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde. Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             loadMemories();
         }
@@ -103,11 +105,6 @@ namespace SiMem
             if (dialog.Result == AddItemResult.AddItemOK)
             {
                 loadMemories();
-                // Verschieben Sie das neue Element per Bildlauf in die Anzeige.
-                var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
-                var listView = container.ContentTemplateRoot as ListView;
-                //Einfügen des neuen Memory Objekts
-                listView.ScrollIntoView(dialog.Memory, ScrollIntoViewAlignment.Leading);
             }
         }
 
@@ -124,11 +121,39 @@ namespace SiMem
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        private async void ItemView_Edit(object sender, RoutedEventArgs e)
+        {
+            // Zur entsprechenden Zielseite navigieren und die neue Seite konfigurieren,
+            // indem die erforderlichen Informationen als Navigationsparameter übergeben werden
+            var memory = (Memory)(e.OriginalSource as FrameworkElement).DataContext;
+            //Starten des Dialogs zum neu Editieren einer Memory
+            var dialog = new AddItemPage(AddItemPage.EDIT_MODE,memory);
+            var result = await dialog.ShowAsync();
+            //Wenn ein neues Element eingefügt wurde, werden die Memories neu geladen 
+            if (dialog.Result == AddItemResult.AddItemOK)
+            {
+                loadMemories();
+            }
 
+        }
+        /// <summary>
+        /// Löscht das ausgewählte Item aus der Datenbank und aus der Liste
+        /// </summary>
+        private void ItemView_Delete(object sender, RoutedEventArgs e)
+        {
+            // Löscht das momentan ausgewählt Element, sowohl aus der Datenbank, als auch aus der Liste
+            var memory = (Memory)(e.OriginalSource as FrameworkElement).DataContext;
+            memoryDataSource.Delete(memory);
+            loadMemories();
+         
+        }
         /// <summary>
         /// Lädt den Inhalt für das zweite Pivotelement, wenn es per Bildlauf in die Anzeige verschoben wird.
         /// </summary>
-        private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
+        private void SecondPivot_Loaded(object sender, object param)
         {
             return;
         }

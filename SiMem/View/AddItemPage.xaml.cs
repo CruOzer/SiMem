@@ -20,19 +20,13 @@ namespace SiMem.View
     /// </summary>
     public sealed partial class AddItemPage : ContentDialog
     {
+        public static int EDIT_MODE = 0;
+        public static int ADD_MODE = 1;
         /// <summary>
         /// Hilfsobjekt, um Daten in die Datenbank zu schreiben
         /// </summary>
         IDataSource<Memory> memoryDataSource;
-        /// <summary>
-        /// Standardkonstruktor instanziert nötige Objekte;
-        /// </summary>
-        public AddItemPage()
-        {
-            this.InitializeComponent();
-            //Holt sich alle die Schnittstelle als Dependency Inject
-            memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
-        }
+        private int mode;
         /// <summary>
         /// Ergebnis des Dialogs
         /// </summary>
@@ -41,7 +35,42 @@ namespace SiMem.View
             get; private set;
         }
 
-        public Memory Memory;
+        private Memory memory;
+        /// <summary>
+        /// Standardkonstruktor mit dem Modus ADD
+        /// </summary>
+        public AddItemPage() : this(ADD_MODE, new Memory())
+        {
+        }
+        /// <summary>
+        /// Konstuktor mit explizitem Modus und der übergabe eines Memories (Standardmäßiger Modus ist Add)
+        /// </summary>
+        /// <param name="mode">Dialog Modus</param>
+        /// <param name="memory">Memory Object was geladen wird</param>
+        public AddItemPage(int mode, Memory memory)
+        {
+            this.mode = mode;
+            this.memory = memory;
+            this.InitializeComponent();
+            //Holt sich alle die Schnittstelle als Dependency Inject
+            memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
+            //Sofern der Editmodus aktiviert ist, wird das Objekt schon geladen
+            if (this.mode == EDIT_MODE)
+            {
+                initializeTextBlocks();
+            }            
+        }
+
+        /// <summary>
+        /// Laden der Memory in die Textfelder
+        /// </summary>
+        private void initializeTextBlocks()
+        {
+            titleText.Text = memory.Title;
+            textText.Text = memory.Text;
+        }
+
+      
    
         /// <summary>
         /// Der PrimaryButton steht für Speichern. Sind die Felder validiert wird die Memory gespeichert und der Dialog schließt sich
@@ -60,15 +89,14 @@ namespace SiMem.View
                 return;
             }
             //Speichern der aktuellen Daten
-            Memory = new Memory();
-            Memory.Id = memoryDataSource.GetMax() + 1;
-            Memory.Text = textText.Text;
-            Memory.Datum = DateTime.Now;
-            Memory.Title = titleText.Text;
+            memory.Id = memoryDataSource.GetMax() + 1;
+            memory.Text = textText.Text;
+            memory.Datum = DateTime.Now;
+            memory.Title = titleText.Text;
             //TODO löschen, ändern?
-            Memory.GroupId = 1;
+            memory.GroupId = 1;
             //Speichern in die Datenbank
-            memoryDataSource.Insert(Memory);
+            memoryDataSource.Insert(memory);
             //Setzen des Ergbenisses
             this.Result = AddItemResult.AddItemOK;
             //Schließen des Dialogs

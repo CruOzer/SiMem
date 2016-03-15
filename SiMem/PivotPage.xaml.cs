@@ -1,5 +1,8 @@
-﻿using SiMem.Common;
+﻿using Autofac;
+using SiMem.Common;
 using SiMem.Data;
+using SiMem.Database;
+using SiMem.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,6 +31,9 @@ namespace SiMem
         private const string FirstGroupName = "FirstGroup";
         private const string SecondGroupName = "SecondGroup";
 
+        private IDataSource<Memory> memDS;
+        private IDataSource<MemoryGroup> memGroupDS;
+
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
@@ -41,6 +47,19 @@ namespace SiMem
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            memGroupDS = App.Container.Resolve<IDataSource<MemoryGroup>>();
+            memDS =  App.Container.Resolve<IDataSource<Memory>>();
+            //Testdaten
+            memGroupDS.Insert(new MemoryGroup(1, "Hallo"));
+            memGroupDS.Insert(new MemoryGroup(2, "Welt"));
+            memDS.Insert(new Memory(1, 1, "Titel 1", "Inhalt"));
+            memDS.Insert(new Memory(2, 1, "Titel 2", "Inhalt"));
+            memDS.Insert(new Memory(3, 1, "Titel 3", "Inhalt"));
+            memDS.Insert(new Memory(4, 2, "Titel 4", "Inhalt"));
+            memDS.Insert(new Memory(5, 2, "Titel 5", "Inhalt"));
+            loadPivot(1);
+            
         }
 
         /// <summary>
@@ -73,9 +92,7 @@ namespace SiMem
         /// beibehalten wurde. Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // TODO: Ein geeignetes Datenmodell für die domänenspezifische Anforderung erstellen, um die Beispieldaten auszutauschen
-            var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-1");
-            this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
+            loadPivot(1);
         }
 
         /// <summary>
@@ -122,7 +139,7 @@ namespace SiMem
         {
             // Zur entsprechenden Zielseite navigieren und die neue Seite konfigurieren,
             // indem die erforderlichen Informationen als Navigationsparameter übergeben werden
-            var itemId = ((SampleDataItem)e.ClickedItem).UniqueId;
+            var itemId = ((Memory)e.ClickedItem).Id;
             if (!Frame.Navigate(typeof(ItemPage), itemId))
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
@@ -134,8 +151,14 @@ namespace SiMem
         /// </summary>
         private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
         {
-            var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-2");
-            this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
+            loadPivot(2);
+        }
+
+        private void loadPivot(int groupId)
+        {
+            MemoryGroup memGroup = memGroupDS.GetById(groupId);
+            var memory = memDS.GetAll(groupId);
+            this.DefaultViewModel[memGroup.Title] = memory;
         }
 
         #region NavigationHelper-Registrierung

@@ -1,21 +1,17 @@
-﻿using SiMem.Common;
+﻿using Autofac;
+using SiMem.Common;
+using SiMem.database;
+using SiMem.Database;
+using SiMem.DataModel;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+
+
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -26,6 +22,7 @@ namespace SiMem
     /// </summary>
     public sealed partial class App : Application
     {
+        public static IContainer Container;
         private TransitionCollection transitions;
 
         /// <summary>
@@ -34,6 +31,7 @@ namespace SiMem
         /// </summary>
         public App()
         {
+            initializeContainer();
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
         }
@@ -112,7 +110,8 @@ namespace SiMem
                     throw new Exception("Failed to create initial page");
                 }
             }
-
+            //Instanziert den Container für Dependency Inject
+ 
             // Sicherstellen, dass das aktuelle Fenster aktiv ist.
             Window.Current.Activate();
         }
@@ -139,6 +138,17 @@ namespace SiMem
             var deferral = e.SuspendingOperation.GetDeferral();
             await SuspensionManager.SaveAsync();
             deferral.Complete();
+        }
+
+        private void initializeContainer()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.RegisterType<DBConnection>().As<IDBConnection>();
+            builder.RegisterType<MemoryDataSource>().As<IDataSource<Memory>>();
+            builder.RegisterType<MemoryGroupDataSource>().As<IDataSource<MemoryGroup>>();
+            Container = builder.Build();
+            IDBConnection dbConn=Container.Resolve<IDBConnection>();
+            dbConn.onAppStart();
         }
     }
 }

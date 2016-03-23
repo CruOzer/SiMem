@@ -23,23 +23,21 @@
 
         <!-- Titelbereich -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="page title" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <TextBlock x:Uid="Header" Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <TextBlock  x:Uid="AddItemPageTitle" Text="page title" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
+        <!--Inhalt-->
         <StackPanel Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="rootLayout" >
-            <TextBox x:Name="titleText" Header="title"/>
-            <TextBox x:Name="textText" Header="content" TextWrapping="Wrap" AcceptsReturn="True" />
+            <TextBox x:Uid="titleText" x:Name="titleText" Header="title"/>
+            <TextBox x:Uid="contentText" x:Name="contentText" Header="content" TextWrapping="Wrap" AcceptsReturn="True" />
+            <ComboBox x:Name="memoryTypeComboBox" />
+
         </StackPanel>
-
-        <!--TODO: Inhalte sollten innerhalb des folgenden Rasters platziert werden,-->
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-
-        </Grid>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton  x:Name="Save" Label="save" Icon="Save" Click="SaveButton_Clicked" />
-            <AppBarButton x:Name="AddAppBarButton" Label="cancel" Icon="Cancel" Click="CancelButton_Click" />
+            <AppBarButton x:Uid="SaveAppBarButton"  x:Name="SaveAppBarButton" Label="save" Icon="Save" Click="SaveButton_Clicked" />
+            <AppBarButton x:Uid="CancelAppBarButton" x:Name="CancelAppBarButton" Label="cancel" Icon="Cancel" Click="CancelButton_Click" />
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

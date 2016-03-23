@@ -3,6 +3,7 @@ using SiMem.Common;
 using SiMem.Data;
 using SiMem.DataModel;
 using System;
+using System.Diagnostics;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -38,6 +39,7 @@ namespace SiMem.View
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
+            instantiateMemoryTypeComboBox();
         }
 
         /// <summary>
@@ -63,6 +65,7 @@ namespace SiMem.View
             }
         }
 
+      
         /// <summary>
         /// Füllt die Seite mit Inhalt auf, der bei der Navigation übergeben wird.  Gespeicherte Zustände werden ebenfalls
         /// bereitgestellt, wenn eine Seite aus einer vorherigen Sitzung neu erstellt wird.
@@ -100,7 +103,7 @@ namespace SiMem.View
         private void initializeTextBlocks()
         {
             titleText.Text = memory.Title;
-            textText.Text = memory.Text;
+            contentText.Text = memory.Text;
         }
 
         /// <summary>
@@ -121,7 +124,7 @@ namespace SiMem.View
             if (validateInput())
             {
                 //Speichern der aktuellen Daten
-                memory.Text = textText.Text;
+                memory.Text = contentText.Text;
                 memory.Title = titleText.Text;
                 switch (mode)
                 {
@@ -156,7 +159,7 @@ namespace SiMem.View
         {
             bool result = true;
             //Validierung der Felder
-            if (string.IsNullOrEmpty(textText.Text))
+            if (string.IsNullOrEmpty(contentText.Text))
             {
                 result = false;
             }
@@ -201,6 +204,18 @@ namespace SiMem.View
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
+        }
+
+        /// <summary>
+        /// Instantiates the MemoryTypes into the ComboBox
+        /// </summary>
+        private void instantiateMemoryTypeComboBox()
+        {
+            for (int i = 1 ; i <= MemoryType.MemoryTypeLength ; i++)
+            {
+                memoryTypeComboBox.Items.Add(MemoryType.getMemoryTypeName(i));
+            }
+            memoryTypeComboBox.SelectedIndex = 0;
         }
     }
 }

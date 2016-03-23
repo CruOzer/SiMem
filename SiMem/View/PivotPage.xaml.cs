@@ -121,7 +121,7 @@ namespace SiMem
         /// <summary>
         /// Lädt ein Dialog und editiert bei Erfolg das Listenelement.
         /// </summary>
-        private async void ItemView_Edit(object sender, RoutedEventArgs e)
+        private void ItemView_Edit(object sender, RoutedEventArgs e)
         {
             // Zur entsprechenden Zielseite navigieren und die neue Seite konfigurieren,
             // indem die erforderlichen Informationen als Navigationsparameter übergeben werden

@@ -38,7 +38,6 @@
         <StackPanel Grid.Row="1" Margin="19,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <TextBlock Text="{Binding Datum}" Style="{ThemeResource ControlContextualInfoTextBlockStyle}" />
             <TextBlock Text="{Binding Text}" Style="{ThemeResource BodyTextBlockStyle}" />
-            
         </StackPanel>
         <!-- 
             TODO: Inhalte sollten innerhalb des folgenden Rasters platziert werden, 

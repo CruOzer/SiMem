@@ -113,6 +113,7 @@
     <Compile Include="Database\MemoryGroupDataSource.cs" />
     <Compile Include="DataModel\Memory.cs" />
     <Compile Include="DataModel\MemoryGroup.cs" />
+    <Compile Include="DataModel\MemoryType.cs" />
     <Compile Include="View\AddItemPage.xaml.cs">
       <DependentUpon>AddItemPage.xaml</DependentUpon>
     </Compile>

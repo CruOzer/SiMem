@@ -96,15 +96,12 @@ namespace SiMem
         /// <summary>
         /// Lädt ein Dialog und fügt bei Erfolg der Liste ein Element hinzu, wenn auf die App-Leisten-Schaltfläche geklickt wird.
         /// </summary>
-        private async void AddAppBarButton_Click(object sender, RoutedEventArgs e)
+        private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            //Starten des Dialogs zum neu Einfügen einer Memory
-            var dialog = new AddItemPage();
-            var result = await dialog.ShowAsync();
-            //Wenn ein neues Element eingefügt wurde, werden die Memories neu geladen 
-            if (dialog.Result == AddItemResult.AddItemOK)
+            //Starten der Seite zum neu Einfügen einer Memory
+            if (!Frame.Navigate(typeof(AddItemPage)))
             {
-                loadMemories();
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
         }
 
@@ -129,15 +126,10 @@ namespace SiMem
             // Zur entsprechenden Zielseite navigieren und die neue Seite konfigurieren,
             // indem die erforderlichen Informationen als Navigationsparameter übergeben werden
             var memory = (Memory)(e.OriginalSource as FrameworkElement).DataContext;
-            //Starten des Dialogs zum neu Editieren einer Memory
-            var dialog = new AddItemPage(AddItemPage.EDIT_MODE,memory);
-            var result = await dialog.ShowAsync();
-            //Wenn ein neues Element eingefügt wurde, werden die Memories neu geladen 
-            if (dialog.Result == AddItemResult.AddItemOK)
+            if (!Frame.Navigate(typeof(AddItemPage), memory.Id))
             {
-                loadMemories();
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
-
         }
         /// <summary>
         /// Löscht das ausgewählte Item aus der Datenbank und aus der Liste

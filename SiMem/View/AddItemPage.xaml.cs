@@ -1,73 +1,99 @@
-﻿using SiMem.Data;
+﻿using Autofac;
+using SiMem.Common;
+using SiMem.Data;
 using SiMem.DataModel;
-using Windows.UI.Xaml.Controls;
-using Autofac;
 using System;
-using Windows.UI.ViewManagement;
+using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
-using System.Diagnostics;
-// Die Elementvorlage "Inhaltsdialog" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+
+// Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
 namespace SiMem.View
 {
     /// <summary>
-    /// Ergebniswerte des Dialogs
+    /// Eine leere Seite, die eigenständig verwendet werden kann oder auf die innerhalb eines Frames navigiert werden kann.
     /// </summary>
-    public enum AddItemResult
+    public sealed partial class AddItemPage : Page
     {
-        AddItemOK,
-        AddItemCancel
-    }
-    /// <summary>
-    /// Dialog zum erstellen von neuen Memories
-    /// </summary>
-    public sealed partial class AddItemPage : ContentDialog
-    {
-       
-        public static int EDIT_MODE = 0;
-        public static int ADD_MODE = 1;
-        /// <summary>
-        /// Hilfsobjekt, um Daten in die Datenbank zu schreiben
-        /// </summary>
-        IDataSource<Memory> memoryDataSource;
+        public const int EDIT_MODE = 0;
+        public const int ADD_MODE = 1;
+
+        private NavigationHelper navigationHelper;
+        private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        private IDataSource<Memory> memoryDataSource;
+        private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+        //Modues der Page
         private int mode;
-        /// <summary>
-        /// Ergebnis des Dialogs
-        /// </summary>
-        public AddItemResult Result
-        {
-            get; private set;
-        }
-
+        //Zu bearbeitende Memory
         private Memory memory;
-        /// <summary>
-        /// Standardkonstruktor mit dem Modus ADD
-        /// </summary>
-        public AddItemPage() : this(ADD_MODE, new Memory())
-        {
-        }
-        /// <summary>
-        /// Konstuktor mit explizitem Modus und der übergabe eines Memories (Standardmäßiger Modus ist Add)
-        /// </summary>
-        /// <param name="mode">Dialog Modus</param>
-        /// <param name="memory">Memory Object was geladen wird</param>
-        public AddItemPage(int mode, Memory memory)
-        {
-            // Subscribe keyboardTimer Tick event
-            keyboardTimer.Tick += keyboardTimer_Tick;
 
-            this.mode = mode;
-            this.memory = memory;
+
+        public AddItemPage()
+        {
             this.InitializeComponent();
-            //Holt sich alle die Schnittstelle als Dependency Inject
+
+            this.navigationHelper = new NavigationHelper(this);
+            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
+            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
-            //Sofern der Editmodus aktiviert ist, wird das Objekt schon geladen
-            if (this.mode == EDIT_MODE)
-            {
-                initializeTextBlocks();
-            }            
         }
 
+        /// <summary>
+        /// Ruft den <see cref="NavigationHelper"/> ab, der mit dieser <see cref="Page"/> verknüpft ist.
+        /// </summary>
+        public NavigationHelper NavigationHelper
+        {
+            get
+            {
+                return this.navigationHelper;
+            }
+        }
+
+        /// <summary>
+        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
+        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
+        /// </summary>
+        public ObservableDictionary DefaultViewModel
+        {
+            get
+            {
+                return this.defaultViewModel;
+            }
+        }
+
+        /// <summary>
+        /// Füllt die Seite mit Inhalt auf, der bei der Navigation übergeben wird.  Gespeicherte Zustände werden ebenfalls
+        /// bereitgestellt, wenn eine Seite aus einer vorherigen Sitzung neu erstellt wird.
+        /// </summary>
+        /// <param name="sender">
+        /// Die Quelle des Ereignisses, normalerweise <see cref="NavigationHelper"/>
+        /// </param>
+        /// <param name="e">Ereignisdaten, die die Navigationsparameter bereitstellen, die an
+        /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
+        /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
+        /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
+        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        {
+            if (e.NavigationParameter != null)
+            {
+                //Übergabe der Id der Memory
+                int memoryId = (int)e.NavigationParameter;
+                //Holen der Memory
+                memory = memoryDataSource.GetById(memoryId);
+                //Bestücken der Textfelder
+                initializeTextBlocks();
+                //Setzen des aktuellen Modus der Page
+                mode = EDIT_MODE;
+            }
+            else
+            {
+                memory = new Memory();
+                //Setzen des aktuellen Modus der Page
+                mode = ADD_MODE;
+            }
+        }
         /// <summary>
         /// Laden der Memory in die Textfelder
         /// </summary>
@@ -76,105 +102,105 @@ namespace SiMem.View
             titleText.Text = memory.Title;
             textText.Text = memory.Text;
         }
-   
+
         /// <summary>
-        /// Der PrimaryButton steht für Speichern. Sind die Felder validiert wird die Memory gespeichert und der Dialog schließt sich
+        /// Behält den dieser Seite zugeordneten Zustand bei, wenn die Anwendung angehalten oder
+        /// die Seite im Navigationscache verworfen wird. Die Werte müssen den Serialisierungsanforderungen
+        /// von <see cref="SuspensionManager.SessionState"/> entsprechen.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        /// <param name="sender">Die Quelle des Ereignisses, normalerweise <see cref="NavigationHelper"/></param>
+        /// <param name="e">Ereignisdaten, die ein leeres Wörterbuch zum Auffüllen bereitstellen
+        /// serialisierbarer Zustand.</param>
+        private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+        }
+
+        private void SaveButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            //Validiert den Input
+            if (validateInput())
+            {
+                //Speichern der aktuellen Daten
+                memory.Text = textText.Text;
+                memory.Title = titleText.Text;
+                switch (mode)
+                {
+                    case ADD_MODE:
+                        memory.Id = memoryDataSource.GetMax() + 1;
+                        memory.Datum = DateTime.Now;
+                        //TODO löschen, ändern?
+                        memory.GroupId = 1;
+                        //Einfügen in die Datenbank
+                        memoryDataSource.Insert(memory);
+                        break;
+                    case EDIT_MODE:
+                        //Update der Datenbank
+                        memoryDataSource.Update(memory);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            //Starten der Seite MainSeite
+            if (!Frame.Navigate(typeof(PivotPage)))
+            {
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+            }
+        }
+
+        /// <summary>
+        /// Validates the Input
+        /// </summary>
+        /// <returns>Input is correct or not</returns>
+        private bool validateInput()
+        {
+            bool result = true;
             //Validierung der Felder
             if (string.IsNullOrEmpty(textText.Text))
             {
-                return;
+                result = false;
             }
             if (string.IsNullOrEmpty(titleText.Text))
             {
-                return;
+                result = false;
             }
-
-            //Speichern der aktuellen Daten
-            memory.Text = textText.Text;
-            memory.Title = titleText.Text;
-            if (mode == ADD_MODE)
-            {
-                memory.Id = memoryDataSource.GetMax() + 1;
-                memory.Datum = DateTime.Now;
-                //TODO löschen, ändern?
-                memory.GroupId = 1;
-                //Einfügen in die Datenbank
-                memoryDataSource.Insert(memory);
-            }
-            else
-            {
-                //Update der Datenbank
-                memoryDataSource.Update(memory);
-            }
-            
-            //Setzen des Ergbenisses
-            this.Result = AddItemResult.AddItemOK;
-            //Schließen des Dialogs
-            this.Hide();
+            return result;
         }
+
+        #region NavigationHelper-Registrierung
+
         /// <summary>
-        /// Der SecondaryButton steht für Schließen.
+        /// Die in diesem Abschnitt bereitgestellten Methoden werden einfach verwendet,
+        /// damit NavigationHelper auf die Navigationsmethoden der Seite reagieren kann.
+        /// <para>
+        /// Platzieren Sie seitenspezifische Logik in Ereignishandlern für  
+        /// <see cref="NavigationHelper.LoadState"/>
+        /// und <see cref="NavigationHelper.SaveState"/>.
+        /// Der Navigationsparameter ist in der LoadState-Methode zusätzlich 
+        /// zum Seitenzustand verfügbar, der während einer früheren Sitzung gesichert wurde.
+        /// </para>
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        /// <param name="e">Stellt Daten für Navigationsmethoden und -ereignisse bereit.
+        /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            //Setzen des Ergbenisses
-            this.Result = AddItemResult.AddItemCancel;
-            //Schließen des Dialogs
-            this.Hide();
-        }
-        /*---------------------------------------------------------------- TASTATUR STUFF ----------------------------------------------------------------
-        */
-        // Handle InputPane manually so the UI doesn't scroll when the keyboard appears
-        InputPane inputPane = InputPane.GetForCurrentView();
-        // DispatcherTimer to ChangeView() of ScrollViewer
-        DispatcherTimer keyboardTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
-
-        private void textText_GotFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            // Subscribe InputPane events to handle UI scrolling
-            inputPane.Showing += this.InputPaneShowing;
-            inputPane.Hiding += this.InputPaneHiding;
-        }
-        private void InputPaneShowing(InputPane sender, InputPaneVisibilityEventArgs e)
-        {
-            // Set EnsuredFocusedElementInView to true so the UI doesn't scroll
-            e.EnsuredFocusedElementInView = true;
-
-            // Set new margins to LayoutRoot (to compensate keyboard)
-            textText.MaxHeight = 80;
-            Debug.WriteLine(textText.MaxHeight);
-
-            // Unsubscribe InputPane Showing event
-            inputPane.Showing -= this.InputPaneShowing;
+            this.navigationHelper.OnNavigatedTo(e);
         }
 
-        private void InputPaneHiding(InputPane sender, InputPaneVisibilityEventArgs e)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            // Set EnsuredFocusedElementInView to false so the UI scrolls
-            e.EnsuredFocusedElementInView = false;
-
-            // Reset LayoutRoot margins
-            textText.MaxHeight = 200;
-
-            // Unsubscribe InputPane Hiding event to handle UI scrolling
-            inputPane.Hiding -= this.InputPaneHiding;
+            this.navigationHelper.OnNavigatedFrom(e);
         }
-        private void keyboardTimer_Tick(object sender, object e)
-        {
-            // Stop timer so it doesn't repeat
-            keyboardTimer.Stop();
 
-            // Invoke ChangeView() on NoteContentScrollViewer, and use GetRectFromCharacterIndex to scroll to caret position
-            if (textText.Text != "")
-                // textScrollView.ChangeView(0, textText.GetRectFromCharacterIndex(textText.SelectionStart - 1, true).Y, null);
-                textScrollView.ChangeView(0, textScrollView.ExtentHeight, null);
+        #endregion
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Starten der Seite MainSeite
+            if (!Frame.Navigate(typeof(PivotPage)))
+            {
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+            }
         }
     }
 }

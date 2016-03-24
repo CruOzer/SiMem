@@ -4,11 +4,10 @@ using SiMem.Data;
 using SiMem.DataModel;
 using SiMem.View;
 using System;
+using System.Diagnostics;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
@@ -17,17 +16,16 @@ namespace SiMem
 {
     public sealed partial class PivotPage : Page
     {
-        private const string FirstGroupName = "FirstGroup";
-        private const string SecondGroupName = "SecondGroup";
-
+        private const string RecentGroupName = "Recent";
+        private const string ImportantGroupName = "Important";
+        private const string StandardGroupName = "Standard";
+        private const string OtherGroupName = "Other";
+        private const int RecentMemoriesCount = 5;
         /// <summary>
         /// Datenbankschnittstelle Memory
         /// </summary>
         private IDataSource<Memory> memoryDataSource;
-        /// <summary>
-        /// Datenbankschnittstelle MemoryGroup
-        /// </summary>
-        private IDataSource<MemoryGroup> memoryGroupDataSource;
+ 
 
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -43,10 +41,10 @@ namespace SiMem
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             //Laden der Dependency Injects der Datenbankschnittstellen
-            memoryGroupDataSource = App.Container.Resolve<IDataSource<MemoryGroup>>();
             memoryDataSource =  App.Container.Resolve<IDataSource<Memory>>();
+            
         }
- 
+        
         /// <summary>
         /// Ruft den <see cref="NavigationHelper"/> ab, der mit dieser <see cref="Page"/> verknüpft ist.
         /// </summary>
@@ -77,9 +75,30 @@ namespace SiMem
         /// beibehalten wurde. Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            loadMemories();
+            if (e.NavigationParameter != null)
+            {
+                try {
+                    //Übergabe der Types
+                    int[] types = (int[])e.NavigationParameter;
+                    //und neuladen der Views
+                    if (types[0] != types[1])
+                    {
+                        loadMemories(types[0]);
+                        loadMemories(types[1]);
+                    }
+                    else
+                    {
+                        loadMemories(types[0]);
+                    }
+                    loadMemories(-1);
+                    Debug.WriteLine("Neuladen der Views");
+                }
+                catch (InvalidCastException)
+                {
+                    return;
+                }
+            }
         }
-       
         /// <summary>
         /// Behält den dieser Seite zugeordneten Zustand bei, wenn die Anwendung angehalten oder
         /// die Seite im Navigationscache verworfen wird. Die Werte müssen den Serialisierungsanforderungen
@@ -90,7 +109,6 @@ namespace SiMem
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
-            // TODO: den eindeutigen Zustand der Seite hier speichern.
         }
 
         /// <summary>
@@ -138,25 +156,36 @@ namespace SiMem
         {
             // Löscht das momentan ausgewählt Element, sowohl aus der Datenbank, als auch aus der Liste
             var memory = (Memory)(e.OriginalSource as FrameworkElement).DataContext;
+            //Delete Memory
             memoryDataSource.Delete(memory);
-            loadMemories();
-         
-        }
-        /// <summary>
-        /// Lädt den Inhalt für das zweite Pivotelement, wenn es per Bildlauf in die Anzeige verschoben wird.
-        /// </summary>
-        private void SecondPivot_Loaded(object sender, object param)
-        {
-            return;
-        }
+            //Reload the Memories within the type
+            loadMemories(memory.MemoryType);
+            //Reload the RecentMemories
+            loadMemories(-1);
+       }
 
         /// <summary>
         /// Laden alle Memories
         /// </summary>
-        private void loadMemories()
+        private void loadMemories(int type)
         {
-            var memories = memoryDataSource.GetAll(1);
-            this.DefaultViewModel[FirstGroupName] = memories;
+            var memories = memoryDataSource.GetByType(type);
+            switch (type)
+            {
+                case MemoryType.STANDARD:
+                    this.DefaultViewModel[StandardGroupName] = memories;
+                    break;
+                case MemoryType.IMPORTANT:
+                    this.DefaultViewModel[ImportantGroupName] = memories;
+                    break;
+                case MemoryType.OTHER:
+                    this.DefaultViewModel[OtherGroupName] = memories;
+                    break;
+                default:
+                    var recentMemories = memoryDataSource.GetRecent(RecentMemoriesCount);
+                    this.DefaultViewModel[RecentGroupName] = recentMemories;
+                    break;
+            }
         }
 
         #region NavigationHelper-Registrierung
@@ -185,5 +214,27 @@ namespace SiMem
         }
 
         #endregion
+        /// <summary>
+        /// Lädt den Inhalt für das Pivotelement, wenn es per Bildlauf in die Anzeige verschoben wird.
+        /// </summary>
+        private void Pivot_Loaded(object sender, RoutedEventArgs e)
+        {
+            PivotItem pivotItem = (PivotItem)sender;
+            switch (pivotItem.Name)
+            {
+                case "PivotItemImportant":
+                    loadMemories(MemoryType.IMPORTANT);
+                    break;
+                case "PivotItemStandard":
+                    loadMemories(MemoryType.STANDARD);
+                    break;
+                case "PivotItemOther":
+                    loadMemories(MemoryType.OTHER);
+                    break;
+                case "PivotItemRecent":
+                    loadMemories(-1);
+                    break;
+            }
+        }
     }
 }

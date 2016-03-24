@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    DataContext="{Binding DefaultViewModel.Item, RelativeSource={RelativeSource Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid x:Name="LayoutRoot">
@@ -24,14 +25,13 @@
         <!-- Titelbereich -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
             <TextBlock x:Uid="Header" Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock  x:Uid="AddItemPageTitle" Text="page title" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <TextBlock  x:Uid="AddItemPageTitle" Text="edit" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
         <!--Inhalt-->
         <StackPanel Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="rootLayout" >
-            <TextBox x:Uid="titleText" x:Name="titleText" Header="title"/>
-            <TextBox x:Uid="contentText" x:Name="contentText" Header="content" TextWrapping="Wrap" AcceptsReturn="True" />
-            <ComboBox x:Name="memoryTypeComboBox" />
-
+            <TextBox x:Uid="titleText" x:Name="titleText" Header="title" Text="{Binding Title}"/>
+            <TextBox x:Uid="contentText" x:Name="contentText" Header="content" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding Text}"/>
+            <ComboBox x:Name="memoryTypeComboBox" SelectedIndex="{Binding MemoryType}"/>
         </StackPanel>
     </Grid>
     <Page.BottomAppBar>

@@ -1,5 +1,4 @@
-﻿using System;
-using Windows.ApplicationModel.Resources;
+﻿using Windows.ApplicationModel.Resources;
 
 namespace SiMem.DataModel
 {
@@ -12,23 +11,22 @@ namespace SiMem.DataModel
         /// <summary>
         /// Default type
         /// </summary>
-        public static int STANDARD = 1;
+        public const int STANDARD = 0;
         /// <summary>
         /// Important memories
         /// </summary>
-        public static int IMPORTANT = 2;
+        public const int IMPORTANT = 1;
         /// <summary>
         /// Shopping related memories
         /// </summary>
-        public static int SHOPPING = 3;
+        public const int OTHER = 2;
 
         private static readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
         private static string[] memoryTypeName = new string[]{
-        String.Empty,
         resourceLoader.GetString("MemoryTypeStandard"),
         resourceLoader.GetString("MemoryTypeImportant"),
-        resourceLoader.GetString("MemoryTypeShopping")
+        resourceLoader.GetString("MemoryTypeOther")
     };
 
        /// <summary>

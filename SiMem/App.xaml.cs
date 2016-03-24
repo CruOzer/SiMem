@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using SiMem.Common;
 using SiMem.Data;
-using SiMem.database;
 using SiMem.Database;
 using SiMem.DataModel;
 using System;
@@ -149,7 +148,6 @@ namespace SiMem
             ContainerBuilder builder = new ContainerBuilder();
             builder.RegisterType<DBConnection>().As<IDBConnection>();
             builder.RegisterType<MemoryDataSource>().As<IDataSource<Memory>>();
-            builder.RegisterType<MemoryGroupDataSource>().As<IDataSource<MemoryGroup>>();
             Container = builder.Build();
             IDBConnection dbConn=Container.Resolve<IDBConnection>();
             dbConn.onAppStart();

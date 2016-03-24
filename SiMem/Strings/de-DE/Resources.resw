@@ -135,8 +135,8 @@
   <data name="MemoryTypeImportant" xml:space="preserve">
     <value>Wichtig</value>
   </data>
-  <data name="MemoryTypeShopping" xml:space="preserve">
-    <value>Einkaufen</value>
+  <data name="MemoryTypeOther" xml:space="preserve">
+    <value>Andere</value>
   </data>
   <data name="MemoryTypeStandard" xml:space="preserve">
     <value>Standard</value>
@@ -147,10 +147,10 @@
   <data name="Pivot.Title" xml:space="preserve">
     <value>SiMem</value>
   </data>
-  <data name="PivotItem1.Header" xml:space="preserve">
-    <value>Alle</value>
+  <data name="PivotItemRecent.Header" xml:space="preserve">
+    <value>Letzte</value>
   </data>
-  <data name="PivotItem2.Header" xml:space="preserve">
+  <data name="PivotItemImportant.Header" xml:space="preserve">
     <value>Wichtige</value>
   </data>
   <data name="SaveAppBarButton.Label" xml:space="preserve">
@@ -161,5 +161,11 @@
   </data>
   <data name="titleText.Header" xml:space="preserve">
     <value>Titel</value>
+  </data>
+  <data name="PivotItemOther.Header" xml:space="preserve">
+    <value>Andere</value>
+  </data>
+  <data name="PivotItemStandard.Header" xml:space="preserve">
+    <value>Standard</value>
   </data>
 </root>

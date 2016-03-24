@@ -1,42 +1,55 @@
 ﻿using SQLite;
 using System;
-using System.Collections.Generic;
 
 namespace SiMem.Data
 {
     /// <summary>
     /// Klasse für ein Memory-Objekt
     /// </summary>
-    public class Memory
+    public class Memory : IComparable
     {
-        public Memory():this("Leerer Titel")
+        /// <summary>
+        /// Constructor Instanziiert den Standard Typ mit leerem String  mit Datum = aktuelle Zeit
+        /// </summary>
+        public Memory():this(String.Empty,0)
         {
-
         }
-        public Memory(string _title)
+        /// <summary>
+        /// Construct mit Datum = aktuelle Zeit
+        /// </summary>
+        /// <param name="_title">Titel der Memory</param>
+        /// <param name="_groupId">Typ der Memory</param>
+        public Memory(string _title, int _groupId)
         {
             Datum = DateTime.Now;
             Title = _title;
+            MemoryType = _groupId;
         }
-        public Memory(int _id, int _groupId)
+        /// <summary>
+        /// Constructor mit Datum = aktuelle Zeit
+        /// </summary>
+        /// <param name="_title">Titel der Memory</param>
+        /// <param name="_groupId">Typ der Memory</param>
+        /// <param name="_id">Id der Memory</param>
+        public Memory( string _title, int _groupId, int _id)
         {
             Datum = DateTime.Now;
             Id = _id;
-            GroupId = _groupId;
-        }
-        public Memory(int _id, int _groupId, string _title)
-        {
-            Datum = DateTime.Now;
-            Id = _id;
-            GroupId = _groupId;
+            MemoryType = _groupId;
             Title = _title;
         }
-
-        public Memory(int _id, int _groupId, string _title, string _text)
+        /// <summary>
+        /// Constructor mit Datum = aktuelle Zeit
+        /// </summary>
+        /// <param name="_title">Titel der Memory</param>
+        /// <param name="_groupId">Typ der Memory</param>
+        /// <param name="_id">Id der Memory</param>
+        /// <param name="_text">Inhalt der Memory</param>
+        public Memory(string _title, int _groupId, int _id, string _text)
         {
             Datum = DateTime.Now;
             Id = _id;
-            GroupId = _groupId;
+            MemoryType = _groupId;
             Title = _title;
             Text = _text;
         }
@@ -79,6 +92,7 @@ namespace SiMem.Data
         /// <summary>
         /// Titel der Memory
         /// </summary>
+        [NotNull]
         public string Title
         {
             get
@@ -109,29 +123,46 @@ namespace SiMem.Data
             }
         }
 
-        private int groupId;
+        private int memoryType;
         /// <summary>
-        /// Foreign Key für eine MemoryGroup
+        /// MemoryType der Memory (Default ist STANDARD)
         /// </summary>
         [NotNull]
-        public int GroupId
+        public int MemoryType
         {
             get
             {
-                return groupId;
+                return memoryType;
             }
 
             set
             {
-                if (value < 0)
+                if (value < 0 && value >= 3)
                 {
-                    throw new FormatException("Die Gruppen-Id darf nicht leer sein");
+                    throw new FormatException("Der MemoryType ist falsch");
                 }
                 else
                 {
-                    this.groupId = value;
+                    this.memoryType = value;
                 }
             }
+        }
+        /// <summary>
+        /// Vergleicht die Ids zwischen den beiden Memories Kleiner 0: This Instanz ist früher; Gleich 0: This Instanz ist gleich; Größer 0: This Istance ist später, das Objekt ist null oder kein Memory
+        /// </summary>
+        /// <param name="obj">Zu vergleichendeMemory übergeben</param>
+        /// <returns></returns>
+        public int CompareTo(object obj)
+        {
+            if(obj == null)
+                    return 1;
+
+            Memory objAsMemory = obj as Memory;
+            if (objAsMemory == null)
+                return 1;
+
+            else
+                return this.Id.CompareTo(objAsMemory.Id);
         }
     }
 }

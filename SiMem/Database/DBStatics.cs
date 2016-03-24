@@ -13,6 +13,6 @@ namespace SiMem.Database
         /// <summary>
         /// DatenbankVersion
         /// </summary>
-        public static int DB_VERSION = 1;
+        public static int DB_VERSION = 2;
     }
 }

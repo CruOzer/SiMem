@@ -1,10 +1,9 @@
 ﻿using SiMem.Data;
-using SiMem.Database;
 using SQLite;
 using System;
 using System.Threading.Tasks;
 
-namespace SiMem.database
+namespace SiMem.Database
 {
 
     public interface IDBConnection
@@ -43,7 +42,6 @@ namespace SiMem.database
                 {
                     SQLiteConnection db = getConnection();
                     db.CreateTable<Memory>();
-                    db.CreateTable<MemoryGroup>();
                 }
                 getConnection();
                 return true;

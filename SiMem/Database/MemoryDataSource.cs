@@ -1,9 +1,8 @@
-﻿using SiMem.database;
-using SiMem.Data;
+﻿using SiMem.Data;
 using System.Collections.Generic;
 using SiMem.DataModel;
-using System.Diagnostics;
 using System.Linq;
+using System;
 
 namespace SiMem.Database
 {
@@ -39,14 +38,16 @@ namespace SiMem.Database
         /// </summary>
         /// <param name="id">Die Id der gemeinsamen Gruppe</param>
         /// <returns>Liste von Memoryobjekte</returns>
-        public List<Memory> GetAll(int id)
+        public List<Memory> GetAll()
         {
             List<Memory> lMemory = new List<Memory>();
-            var query = conn.Table<Memory>().Where(mem => mem.GroupId.Equals(id));
+            var query = conn.Table<Memory>();
             foreach (var item in query)
             {
                 lMemory.Add(item);
             }
+            //Sortiert von Groß nach klein (neu nach spät)
+            lMemory.Sort((a, b) => a.CompareTo(b)*(-1));
             return lMemory;
         }
 
@@ -88,6 +89,7 @@ namespace SiMem.Database
                 existingMem.Id= mem.Id;
                 existingMem.Text = mem.Text;
                 existingMem.Title = mem.Title;
+                existingMem.MemoryType = mem.MemoryType;
                 conn.RunInTransaction(() =>
                 {
                     conn.Update(existingMem);
@@ -105,11 +107,48 @@ namespace SiMem.Database
             {
                 return conn.Table<Memory>().Max(x => x.Id);
             }
-            catch (System.InvalidOperationException e)
+            catch (System.InvalidOperationException)
             {
                 return 0;
             }
             
+        }
+
+     /// <summary>
+     /// Get all memories of one type
+     /// </summary>
+     /// <param name="type">MemoryType</param>
+     /// <returns>List of memories</returns>
+        public List<Memory> GetByType(int type)
+        {
+            List<Memory> lMemory = new List<Memory>();
+            var query = conn.Table<Memory>().Where(mem => mem.MemoryType.Equals(type));
+            foreach (var item in query)
+            {
+                lMemory.Add(item);
+            }
+            //Sortiert von Groß nach klein (neu nach spät)
+            lMemory.Sort((a, b) => a.CompareTo(b) * (-1));
+            return lMemory;
+        }
+        /// <summary>
+        /// Lädt die letzten Memories. Ist der Count größer als alle Memories, so werden alle Memories zurückgegeben.
+        /// </summary>
+        /// <param name="count">Die Anzehl der Memories</param>
+        /// <returns>Liste von Memories</returns>
+        public List<Memory> GetRecent(int count)
+        {
+            List<Memory> lTemp = GetAll();
+            if (count > lTemp.Count)
+            {
+                return lTemp;
+            }
+            List<Memory> lMemory = new List<Memory>();
+            for (int i = 0 ; i < count ; i++)
+            {
+                lMemory.Add(lTemp[i]);
+            }
+            return lMemory;
         }
     }
 }

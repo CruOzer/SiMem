@@ -25,10 +25,18 @@ namespace SiMem.View
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private IDataSource<Memory> memoryDataSource;
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
-        //Modues der Page
+        /// <summary>
+        /// Modues der Page
+        /// </summary>
         private int mode;
-        //Zu bearbeitende Memory
+        /// <summary>
+        /// Zu bearbeitende Memory
+        /// </summary>
         private Memory memory;
+        /// <summary>
+        /// Speichert den alten Typ der Memory
+        /// </summary>
+        private int oldType;
 
 
         public AddItemPage()
@@ -78,15 +86,14 @@ namespace SiMem.View
         /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
-        {
+        {    
+         
             if (e.NavigationParameter != null)
             {
                 //Übergabe der Id der Memory
                 int memoryId = (int)e.NavigationParameter;
                 //Holen der Memory
                 memory = memoryDataSource.GetById(memoryId);
-                //Bestücken der Textfelder
-                initializeTextBlocks();
                 //Setzen des aktuellen Modus der Page
                 mode = EDIT_MODE;
             }
@@ -96,16 +103,11 @@ namespace SiMem.View
                 //Setzen des aktuellen Modus der Page
                 mode = ADD_MODE;
             }
+            oldType = memory.MemoryType;
+            //Bestücken der Input-Felder
+            this.DefaultViewModel["Item"] = memory;
         }
-        /// <summary>
-        /// Laden der Memory in die Textfelder
-        /// </summary>
-        private void initializeTextBlocks()
-        {
-            titleText.Text = memory.Title;
-            contentText.Text = memory.Text;
-        }
-
+      
         /// <summary>
         /// Behält den dieser Seite zugeordneten Zustand bei, wenn die Anwendung angehalten oder
         /// die Seite im Navigationscache verworfen wird. Die Werte müssen den Serialisierungsanforderungen
@@ -116,6 +118,7 @@ namespace SiMem.View
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            //TODO: speichern
         }
 
         private void SaveButton_Clicked(object sender, RoutedEventArgs e)
@@ -126,13 +129,12 @@ namespace SiMem.View
                 //Speichern der aktuellen Daten
                 memory.Text = contentText.Text;
                 memory.Title = titleText.Text;
+                memory.MemoryType = memoryTypeComboBox.SelectedIndex;
                 switch (mode)
                 {
                     case ADD_MODE:
                         memory.Id = memoryDataSource.GetMax() + 1;
                         memory.Datum = DateTime.Now;
-                        //TODO löschen, ändern?
-                        memory.GroupId = 1;
                         //Einfügen in die Datenbank
                         memoryDataSource.Insert(memory);
                         break;
@@ -144,8 +146,19 @@ namespace SiMem.View
                         break;
                 }
             }
-            //Starten der Seite MainSeite
-            if (!Frame.Navigate(typeof(PivotPage)))
+            int[] types = new int[2];
+            types[0] = memory.MemoryType;
+            if (mode == EDIT_MODE)
+            {
+                types[1] = oldType;
+            }
+            else
+            {
+                types[1] = memory.MemoryType;
+            }
+
+            //Starten der Seite MainSeite mit Array [Type, OldType]
+            if (!Frame.Navigate(typeof(PivotPage),types))
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
@@ -159,10 +172,10 @@ namespace SiMem.View
         {
             bool result = true;
             //Validierung der Felder
-            if (string.IsNullOrEmpty(contentText.Text))
+            /*if (string.IsNullOrEmpty(contentText.Text))
             {
                 result = false;
-            }
+            }*/
             if (string.IsNullOrEmpty(titleText.Text))
             {
                 result = false;
@@ -211,11 +224,10 @@ namespace SiMem.View
         /// </summary>
         private void instantiateMemoryTypeComboBox()
         {
-            for (int i = 1 ; i <= MemoryType.MemoryTypeLength ; i++)
+            for (int i = 0 ; i < MemoryType.MemoryTypeLength ; i++)
             {
                 memoryTypeComboBox.Items.Add(MemoryType.getMemoryTypeName(i));
             }
-            memoryTypeComboBox.SelectedIndex = 0;
         }
     }
 }

@@ -168,4 +168,10 @@
   <data name="StandardPivot.Header" xml:space="preserve">
     <value>Standard</value>
   </data>
+  <data name="PinAppBarButtonPin" xml:space="preserve">
+    <value>Pin to start</value>
+  </data>
+  <data name="PinAppBarButtonUnpin" xml:space="preserve">
+    <value>Unpin from start</value>
+  </data>
 </root>

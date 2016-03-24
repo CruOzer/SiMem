@@ -20,7 +20,7 @@ namespace SiMem
     public sealed partial class ItemPage : Page
     {
 
-        public static String SECONDARY_TILE = "SecondaryTile";
+        public static string SECONDARY_TILE = "SecondaryTile";
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
@@ -37,6 +37,7 @@ namespace SiMem
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
+              
         } 
 
         /// <summary>
@@ -75,6 +76,9 @@ namespace SiMem
             Memory memory = memoryDataSource.GetById(memoryId);
             //Visualisieren der Memory
             this.DefaultViewModel["Item"] = memory;
+
+            //Instanziiere den PinAppBarButton
+            TogglePinAppBarButton(!SecondaryTile.Exists(memoryId.ToString()));
         }
 
         /// <summary>
@@ -132,21 +136,52 @@ namespace SiMem
 
         private async void PinAppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            //TODO
-            Memory memory = memoryDataSource.GetById(memoryId);
-            
-            SecondaryTile secondaryTile = new SecondaryTile(memoryId.ToString(), memory.Title, SECONDARY_TILE + memoryId.ToString(), new Uri("ms-appx:///Assets/Logo.scale-240.png"), TileSize.Square150x150);
-            // Whether or not the app name should be displayed on the tile can be controlled for each tile size.  The default is false.
-            secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
-            // Specify a foreground text value.
-            // The tile background color is inherited from the parent unless a separate value is specified.
-            secondaryTile.VisualElements.ForegroundText = ForegroundText.Dark;
-            // Since pinning a secondary tile on Windows Phone will exit the app and take you to the start screen, any code after 
-            // RequestCreateForSelectionAsync or RequestCreateAsync is not guaranteed to run.  For an example of how to use the OnSuspending event to do
-            // work after RequestCreateForSelectionAsync or RequestCreateAsync returns, see Scenario9_PinTileAndUpdateOnSuspend in the SecondaryTiles.WindowsPhone project.
-            await secondaryTile.RequestCreateAsync();            
 
+            if (SecondaryTile.Exists(memoryId.ToString()))
+            {
+                // Unpin
+                SecondaryTile secondaryTile = new SecondaryTile(memoryId.ToString());
+                bool isUnpinned = await secondaryTile.RequestDeleteAsync();
+
+                TogglePinAppBarButton(isUnpinned);
+            }
+            else
+            {
+                Memory memory = memoryDataSource.GetById(memoryId);
+                SecondaryTile secondaryTile = new SecondaryTile(memoryId.ToString(), memory.Title, SECONDARY_TILE + memoryId.ToString(), new Uri("ms-appx:///Assets/Logo.scale-240.png"), TileSize.Square150x150);
+                // Whether or not the app name should be displayed on the tile can be controlled for each tile size.  The default is false.
+                secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
+                // Specify a foreground text value.
+                // The tile background color is inherited from the parent unless a separate value is specified.
+                secondaryTile.VisualElements.ForegroundText = ForegroundText.Dark;
+                // Since pinning a secondary tile on Windows Phone will exit the app and take you to the start screen, any code after 
+                // RequestCreateForSelectionAsync or RequestCreateAsync is not guaranteed to run.  For an example of how to use the OnSuspending event to do
+                // work after RequestCreateForSelectionAsync or RequestCreateAsync returns, see Scenario9_PinTileAndUpdateOnSuspend in the SecondaryTiles.WindowsPhone project.
+                bool isPinned =await secondaryTile.RequestCreateAsync();
+                TogglePinAppBarButton(!isPinned);
+            }
         }
+
+        /// <summary>
+        /// Updates the layout of the PinAppBarButton to unpin or pin
+        /// </summary>
+        /// <param name="showPinButton">Unpin: false, Pin: true</param>
+        private void TogglePinAppBarButton(bool showPinButton)
+        {
+            if (showPinButton)
+            {
+                this.PinAppBarButton.Label = resourceLoader.GetString("PinAppBarButton.Pin");
+                this.PinAppBarButton.Icon = new SymbolIcon(Symbol.Pin);
+            }
+            else
+            {
+                this.PinAppBarButton.Label = resourceLoader.GetString("PinAppBarButton.Unpin");
+                this.PinAppBarButton.Icon = new SymbolIcon(Symbol.UnPin);
+            }
+
+            this.PinAppBarButton.UpdateLayout();
+        }
+
         /// <summary>
         /// Löscht die Memory und lädt die PivotPage
         /// </summary>

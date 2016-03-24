@@ -8,7 +8,8 @@ using System;
 using Windows.ApplicationModel.Resources;
 using SiMem.View;
 using Windows.UI.StartScreen;
-using Windows.UI.Xaml;
+using NotificationsExtensions.BadgeContent;
+using NotificationsExtensions.TileContent;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -159,6 +160,15 @@ namespace SiMem
                 // work after RequestCreateForSelectionAsync or RequestCreateAsync returns, see Scenario9_PinTileAndUpdateOnSuspend in the SecondaryTiles.WindowsPhone project.
                 bool isPinned =await secondaryTile.RequestCreateAsync();
                 TogglePinAppBarButton(!isPinned);
+
+                // Note: This sample contains an additional reference, NotificationsExtensions, which you can use in your apps
+                ITileWide310x150Text04 tileContent = TileContentFactory.CreateTileWide310x150Text04();
+                tileContent.TextBodyWrap.Text = "Sent to a secondary tile from NotificationsExtensions!";
+
+                ITileSquare150x150Text04 squareContent = TileContentFactory.CreateTileSquare150x150Text04();
+                squareContent.TextBodyWrap.Text = "Sent to a secondary tile from NotificationExtensions!";
+                tileContent.Square150x150Content = squareContent;
+
             }
         }
 

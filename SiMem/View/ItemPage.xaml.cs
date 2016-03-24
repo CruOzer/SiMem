@@ -10,6 +10,7 @@ using SiMem.View;
 using Windows.UI.StartScreen;
 using NotificationsExtensions.BadgeContent;
 using NotificationsExtensions.TileContent;
+using Windows.UI.Notifications;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -152,6 +153,9 @@ namespace SiMem
                 SecondaryTile secondaryTile = new SecondaryTile(memoryId.ToString(), memory.Title, SECONDARY_TILE + memoryId.ToString(), new Uri("ms-appx:///Assets/Logo.scale-240.png"), TileSize.Square150x150);
                 // Whether or not the app name should be displayed on the tile can be controlled for each tile size.  The default is false.
                 secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
+
+                // Adding the wide tile logo.
+                secondaryTile.VisualElements.Wide310x150Logo = new Uri("ms-appx:///Assets/WideLogo.scale-240.png");
                 // Specify a foreground text value.
                 // The tile background color is inherited from the parent unless a separate value is specified.
                 secondaryTile.VisualElements.ForegroundText = ForegroundText.Dark;
@@ -162,13 +166,19 @@ namespace SiMem
                 TogglePinAppBarButton(!isPinned);
 
                 // Note: This sample contains an additional reference, NotificationsExtensions, which you can use in your apps
-                ITileWide310x150Text04 tileContent = TileContentFactory.CreateTileWide310x150Text04();
-                tileContent.TextBodyWrap.Text = "Sent to a secondary tile from NotificationsExtensions!";
+                ITileWide310x150PeekImage01 tileContent = TileContentFactory.CreateTileWide310x150PeekImage01();
+                tileContent.TextHeading.Text = memory.Title;
+                tileContent.TextBodyWrap.Text = memory.Text;
+                tileContent.Image.Src= "ms-appx:///Assets/WideLogo.scale-240.png";
 
-                ITileSquare150x150Text04 squareContent = TileContentFactory.CreateTileSquare150x150Text04();
-                squareContent.TextBodyWrap.Text = "Sent to a secondary tile from NotificationExtensions!";
+                ITileSquare150x150PeekImageAndText02 squareContent = TileContentFactory.CreateTileSquare150x150PeekImageAndText02();
+                squareContent.TextBodyWrap.Text = memory.Text;
+                squareContent.TextHeading.Text = memory.Title;
+                squareContent.Image.Src = "ms-appx:///Assets/Logo.scale-240.png";
                 tileContent.Square150x150Content = squareContent;
 
+                // Send the notification to the secondary tile by creating a secondary tile updater
+                TileUpdateManager.CreateTileUpdaterForSecondaryTile(memoryId.ToString()).Update(tileContent.CreateNotification());
             }
         }
 

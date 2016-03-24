@@ -15,6 +15,7 @@ namespace SiMem.Logic
         void UpdateTile(Memory memory);
         Task<bool> CreateTile(Memory memory);
         Task<bool> DeleteTile(Memory memory);
+        bool TileExists(Memory memory);
     }
     /// <summary>
     /// 
@@ -30,7 +31,7 @@ namespace SiMem.Logic
         public void UpdateTile(Memory memory)
         {
             //If a SecondaryTile for the memory exists
-            if (SecondaryTile.Exists(memory.Id.ToString()))
+            if (TileExists(memory))
             {
                 //Load the wide screen and sets it up
                 ITileWide310x150PeekImage01 tileContent = TileContentFactory.CreateTileWide310x150PeekImage01();
@@ -56,7 +57,7 @@ namespace SiMem.Logic
         public async Task<bool> CreateTile(Memory memory)
         {
             bool isPinned = false;
-            if (!SecondaryTile.Exists(memory.Id.ToString()))
+            if (!TileExists(memory))
             {
                 SecondaryTile secondaryTile = new SecondaryTile(memory.Id.ToString(), memory.Title, SECONDARY_TILE + memory.Id.ToString(), new Uri("ms-appx:///Assets/Logo.scale-240.png"), TileSize.Square150x150);
                 // Whether or not the app name should be displayed on the tile can be controlled for each tile size.  The default is false.
@@ -86,13 +87,18 @@ namespace SiMem.Logic
         public async Task<bool> DeleteTile(Memory memory)
         {
             bool isUnpinned = false;
-            if (SecondaryTile.Exists(memory.Id.ToString()))
+            if (TileExists(memory))
             {
                 // Unpin
                 SecondaryTile secondaryTile = new SecondaryTile(memory.Id.ToString());
                 isUnpinned = await secondaryTile.RequestDeleteAsync();
             }
             return await Task.FromResult(isUnpinned);
+        }
+
+        public bool TileExists(Memory memory)
+        {
+            return SecondaryTile.Exists(memory.Id.ToString());
         }
     }
 }

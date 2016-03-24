@@ -28,11 +28,13 @@
             <TextBlock  x:Uid="AddItemPageTitle" Text="edit" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
         <!--Inhalt-->
-        <StackPanel Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="rootLayout" >
-            <TextBox x:Uid="titleText" x:Name="titleText" Header="title" Text="{Binding Title}"/>
-            <TextBox x:Uid="contentText" x:Name="contentText" Header="content" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding Text}"/>
-            <ComboBox x:Name="memoryTypeComboBox" SelectedIndex="{Binding MemoryType}"/>
-        </StackPanel>
+        <ScrollViewer Grid.Row="1" >
+            <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="rootLayout" >
+                <TextBox x:Uid="titleText" x:Name="titleText" Header="title" Text="{Binding Title}"/>
+                <TextBox x:Uid="contentText" x:Name="contentText" Header="content" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding Text}" MaxHeight="280"/>
+                <ComboBox x:Name="memoryTypeComboBox" SelectedIndex="{Binding MemoryType}"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar>

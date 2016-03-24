@@ -78,9 +78,9 @@ namespace SiMem
             Memory memory = memoryDataSource.GetById(memoryId);
             //Visualisieren der Memory
             this.DefaultViewModel["Item"] = memory;
-
+            
             //Instanziiere den PinAppBarButton
-            TogglePinAppBarButton(!SecondaryTile.Exists(memoryId.ToString()));
+            TogglePinAppBarButton(!siMemTileFactory.TileExists(memory));
         }
 
         /// <summary>
@@ -164,12 +164,12 @@ namespace SiMem
         {
             if (showPinButton)
             {
-                this.PinAppBarButton.Label = resourceLoader.GetString("PinAppBarButton.Pin");
+                this.PinAppBarButton.Label = resourceLoader.GetString("PinAppBarButtonPin");
                 this.PinAppBarButton.Icon = new SymbolIcon(Symbol.Pin);
             }
             else
             {
-                this.PinAppBarButton.Label = resourceLoader.GetString("PinAppBarButton.Unpin");
+                this.PinAppBarButton.Label = resourceLoader.GetString("PinAppBarButtonUnpin");
                 this.PinAppBarButton.Icon = new SymbolIcon(Symbol.UnPin);
             }
 

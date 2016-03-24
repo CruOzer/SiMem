@@ -49,8 +49,8 @@
                                 </i:Interaction.Behaviors>
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Edit" Click="ItemView_Edit"/>
-                                        <MenuFlyoutItem Text="Delete" Click="ItemView_Delete"/>
+                                        <MenuFlyoutItem x:Uid="MenuFlyoutEdit"  Text="Edit" Click="ItemView_Edit"/>
+                                        <MenuFlyoutItem x:Uid="MenuFlyoutEditDelete" Text="Delete" Click="ItemView_Delete"/>
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
                                 <TextBlock
@@ -204,9 +204,6 @@
     <Page.BottomAppBar>
         <CommandBar>
             <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Label="add" Icon="Add" Click="AddAppBarButton_Click" />
-            <CommandBar.SecondaryCommands>
-                <AppBarButton x:Uid="SecondaryButton1" x:Name="SecondaryButton1" Label="secondary command 1" />
-            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

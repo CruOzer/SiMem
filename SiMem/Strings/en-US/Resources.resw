@@ -118,69 +118,69 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddAppBarButton.Label" xml:space="preserve">
-    <value>Hinzufügen</value>
+    <value>add</value>
   </data>
   <data name="AddItemPageTitle.Text" xml:space="preserve">
-    <value>Bearbeitung</value>
+    <value>edit</value>
   </data>
   <data name="CancelAppBarButton.Label" xml:space="preserve">
-    <value>Abbrechen</value>
+    <value>cancel</value>
   </data>
   <data name="contentText.Header" xml:space="preserve">
-    <value>Inhalt</value>
+    <value>content</value>
   </data>
   <data name="Header.Text" xml:space="preserve">
     <value>SiMem</value>
   </data>
   <data name="MemoryTypeImportant" xml:space="preserve">
-    <value>Wichtig</value>
+    <value>important</value>
   </data>
   <data name="MemoryTypeOther" xml:space="preserve">
-    <value>Andere</value>
+    <value>other</value>
   </data>
   <data name="MemoryTypeStandard" xml:space="preserve">
-    <value>Standard</value>
+    <value>standard</value>
   </data>
   <data name="NavigationFailedExceptionMessage" xml:space="preserve">
-    <value>Fehler bei Navigation.</value>
+    <value>Error on Navigation.</value>
   </data>
   <data name="Pivot.Title" xml:space="preserve">
     <value>SiMem</value>
   </data>
   <data name="RecentPivot.Header" xml:space="preserve">
-    <value>Letzte</value>
+    <value>recent</value>
   </data>
   <data name="ImportantPivot.Header" xml:space="preserve">
-    <value>Wichtig</value>
+    <value>important</value>
   </data>
   <data name="SaveAppBarButton.Label" xml:space="preserve">
-    <value>Speichern</value>
+    <value>save</value>
   </data>
   <data name="titleText.Header" xml:space="preserve">
-    <value>Titel</value>
+    <value>title</value>
   </data>
   <data name="OtherPivot.Header" xml:space="preserve">
-    <value>Andere</value>
+    <value>other</value>
   </data>
   <data name="StandardPivot.Header" xml:space="preserve">
-    <value>Standard</value>
+    <value>standard</value>
   </data>
   <data name="PinAppBarButtonPin" xml:space="preserve">
-    <value>Hinzufügen</value>
+    <value>edit</value>
   </data>
   <data name="PinAppBarButtonUnpin" xml:space="preserve">
-    <value>Entfernen</value>
+    <value>delete</value>
   </data>
   <data name="DeleteAppBarButton.Label" xml:space="preserve">
-    <value>Löschen</value>
+    <value>delete</value>
   </data>
   <data name="EditAppBarButton.Label" xml:space="preserve">
-    <value>Bearbeiten</value>
+    <value>edit</value>
   </data>
   <data name="MenuFlyoutDelete.Text" xml:space="preserve">
-    <value>Löschen</value>
+    <value>delete</value>
   </data>
   <data name="MenuFlyoutEdit.Text" xml:space="preserve">
-    <value>Bearbeiten</value>
+    <value>edit</value>
   </data>
 </root>

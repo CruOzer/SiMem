@@ -2,6 +2,7 @@
 using SiMem.Common;
 using SiMem.Data;
 using SiMem.DataModel;
+using SiMem.Logic;
 using SiMem.View;
 using System;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace SiMem
         /// Datenbankschnittstelle Memory
         /// </summary>
         private IDataSource<Memory> memoryDataSource;
- 
+        private ISiMemTileFactory siMemTileFactory;
 
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -43,6 +44,7 @@ namespace SiMem
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             //Laden der Dependency Injects der Datenbankschnittstellen
             memoryDataSource =  App.Container.Resolve<IDataSource<Memory>>();
+            siMemTileFactory = App.Container.Resolve<ISiMemTileFactory>();
             
         }
         
@@ -155,12 +157,14 @@ namespace SiMem
         /// <summary>
         /// Löscht das ausgewählte Item aus der Datenbank und aus der Liste
         /// </summary>
-        private void ItemView_Delete(object sender, RoutedEventArgs e)
+        private async void ItemView_Delete(object sender, RoutedEventArgs e)
         {
             // Löscht das momentan ausgewählt Element, sowohl aus der Datenbank, als auch aus der Liste
             var memory = (Memory)(e.OriginalSource as FrameworkElement).DataContext;
             //Delete Memory
             memoryDataSource.Delete(memory);
+
+            await siMemTileFactory.DeleteTile(memory);
             //Reload the Memories within the type
             loadMemories(memory.MemoryType);
             //Reload the RecentMemories

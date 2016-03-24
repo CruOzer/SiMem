@@ -11,6 +11,7 @@ using Windows.UI.StartScreen;
 using NotificationsExtensions.BadgeContent;
 using NotificationsExtensions.TileContent;
 using Windows.UI.Notifications;
+using SiMem.Logic;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
 
@@ -21,12 +22,11 @@ namespace SiMem
     /// </summary>
     public sealed partial class ItemPage : Page
     {
-
-        public static string SECONDARY_TILE = "SecondaryTile";
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
         private IDataSource<Memory> memoryDataSource;
+        private ISiMemTileFactory siMemTileFactory;
         /// <summary>
         /// Aktuell angezeigte MemoryId
         /// </summary>
@@ -39,7 +39,7 @@ namespace SiMem
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
-              
+            siMemTileFactory = App.Container.Resolve<ISiMemTileFactory>();
         } 
 
         /// <summary>
@@ -135,50 +135,24 @@ namespace SiMem
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
         }
-
+        /// <summary>
+        /// Pins or unpins a secondary tile from the start screenu
+        /// </summary>
         private async void PinAppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-
-            if (SecondaryTile.Exists(memoryId.ToString()))
+            Memory memory = memoryDataSource.GetById(memoryId);
+            //If the createTile was not successul
+            if (!await siMemTileFactory.CreateTile(memory))
             {
-                // Unpin
-                SecondaryTile secondaryTile = new SecondaryTile(memoryId.ToString());
-                bool isUnpinned = await secondaryTile.RequestDeleteAsync();
-
-                TogglePinAppBarButton(isUnpinned);
+                //unload the tile
+                await siMemTileFactory.DeleteTile(memory);
+                //and update the layout
+                TogglePinAppBarButton(true);
             }
             else
             {
-                Memory memory = memoryDataSource.GetById(memoryId);
-                SecondaryTile secondaryTile = new SecondaryTile(memoryId.ToString(), memory.Title, SECONDARY_TILE + memoryId.ToString(), new Uri("ms-appx:///Assets/Logo.scale-240.png"), TileSize.Square150x150);
-                // Whether or not the app name should be displayed on the tile can be controlled for each tile size.  The default is false.
-                secondaryTile.VisualElements.ShowNameOnSquare150x150Logo = true;
-
-                // Adding the wide tile logo.
-                secondaryTile.VisualElements.Wide310x150Logo = new Uri("ms-appx:///Assets/WideLogo.scale-240.png");
-                // Specify a foreground text value.
-                // The tile background color is inherited from the parent unless a separate value is specified.
-                secondaryTile.VisualElements.ForegroundText = ForegroundText.Dark;
-                // Since pinning a secondary tile on Windows Phone will exit the app and take you to the start screen, any code after 
-                // RequestCreateForSelectionAsync or RequestCreateAsync is not guaranteed to run.  For an example of how to use the OnSuspending event to do
-                // work after RequestCreateForSelectionAsync or RequestCreateAsync returns, see Scenario9_PinTileAndUpdateOnSuspend in the SecondaryTiles.WindowsPhone project.
-                bool isPinned =await secondaryTile.RequestCreateAsync();
-                TogglePinAppBarButton(!isPinned);
-
-                // Note: This sample contains an additional reference, NotificationsExtensions, which you can use in your apps
-                ITileWide310x150PeekImage01 tileContent = TileContentFactory.CreateTileWide310x150PeekImage01();
-                tileContent.TextHeading.Text = memory.Title;
-                tileContent.TextBodyWrap.Text = memory.Text;
-                tileContent.Image.Src= "ms-appx:///Assets/WideLogo.scale-240.png";
-
-                ITileSquare150x150PeekImageAndText02 squareContent = TileContentFactory.CreateTileSquare150x150PeekImageAndText02();
-                squareContent.TextBodyWrap.Text = memory.Text;
-                squareContent.TextHeading.Text = memory.Title;
-                squareContent.Image.Src = "ms-appx:///Assets/Logo.scale-240.png";
-                tileContent.Square150x150Content = squareContent;
-
-                // Send the notification to the secondary tile by creating a secondary tile updater
-                TileUpdateManager.CreateTileUpdaterForSecondaryTile(memoryId.ToString()).Update(tileContent.CreateNotification());
+                //Update the layout
+                TogglePinAppBarButton(false);
             }
         }
 
@@ -205,10 +179,12 @@ namespace SiMem
         /// <summary>
         /// Löscht die Memory und lädt die PivotPage
         /// </summary>
-        private void DeleteAppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void DeleteAppBarButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            Memory memory = memoryDataSource.GetById(memoryId);
             //Delete Memory
-            memoryDataSource.Delete(memoryDataSource.GetById(memoryId));
+            memoryDataSource.Delete(memory);
+            await siMemTileFactory.DeleteTile(memory);
             if (!Frame.Navigate(typeof(PivotPage)))
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));

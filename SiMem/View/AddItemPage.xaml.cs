@@ -2,6 +2,7 @@
 using SiMem.Common;
 using SiMem.Data;
 using SiMem.DataModel;
+using SiMem.Logic;
 using System;
 using System.Diagnostics;
 using Windows.ApplicationModel.Resources;
@@ -24,6 +25,7 @@ namespace SiMem.View
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private IDataSource<Memory> memoryDataSource;
+        private ISiMemTileFactory siMemTileFactory;
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
         /// <summary>
         /// Modues der Page
@@ -47,6 +49,7 @@ namespace SiMem.View
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
+            siMemTileFactory = App.Container.Resolve<ISiMemTileFactory>();
             instantiateMemoryTypeComboBox();
         }
 
@@ -123,9 +126,14 @@ namespace SiMem.View
 
         private void SaveButton_Clicked(object sender, RoutedEventArgs e)
         {
+    
             //Validiert den Input
             if (validateInput())
             {
+                //Übergabe an PivotPage
+                int[] types = new int[2];
+                types[0] = memory.MemoryType;
+
                 //Speichern der aktuellen Daten
                 memory.Text = contentText.Text;
                 memory.Title = titleText.Text;
@@ -137,31 +145,26 @@ namespace SiMem.View
                         memory.Datum = DateTime.Now;
                         //Einfügen in die Datenbank
                         memoryDataSource.Insert(memory);
+                        //Übergabe an PivotPage
+                        types[1] = memory.MemoryType;
                         break;
                     case EDIT_MODE:
                         //Update der Datenbank
                         memoryDataSource.Update(memory);
+                        //Update der secondary tiles, sofern vorhanden
+                        siMemTileFactory.UpdateTile(memory);
+                        //Übergabe an PivotPage
+                        types[1] = oldType;
                         break;
                     default:
                         break;
                 }
-            }
-            int[] types = new int[2];
-            types[0] = memory.MemoryType;
-            if (mode == EDIT_MODE)
-            {
-                types[1] = oldType;
-            }
-            else
-            {
-                types[1] = memory.MemoryType;
-            }
-
-            //Starten der Seite MainSeite mit Array [Type, OldType]
-            if (!Frame.Navigate(typeof(PivotPage),types))
-            {
-                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
-            }
+                //Starten der Seite MainSeite mit Array [Type, OldType]
+                if (!Frame.Navigate(typeof(PivotPage), types))
+                {
+                    throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+                }
+            }            
         }
 
         /// <summary>

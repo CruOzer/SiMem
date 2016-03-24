@@ -3,6 +3,7 @@ using SiMem.Common;
 using SiMem.Data;
 using SiMem.Database;
 using SiMem.DataModel;
+using SiMem.Logic;
 using SiMem.View;
 using System;
 using Windows.ApplicationModel;
@@ -113,12 +114,12 @@ namespace SiMem
                 // Wenn die App über ein Secondary Tile gestartet wird, wird nach dem Laden der PivotPage direkt
                 // die ItemPage mit dem ausgewählten Tile (dem jeweiligem Memory) gestartet. Ein GoBack zur PivotPage
                 // ist möglich.
-                if (e.Arguments != null && !string.IsNullOrWhiteSpace(e.Arguments.ToString()) && e.Arguments.ToString().Contains(ItemPage.SECONDARY_TILE))
+                if (e.Arguments != null && !string.IsNullOrWhiteSpace(e.Arguments.ToString()) && e.Arguments.ToString().Contains(SiMemTileFactory.SECONDARY_TILE))
                 {
                     //Das Argument wird übergeben,
                     string launchParam = e.Arguments.ToString();
                     // zurechtgeschnitten
-                    launchParam = launchParam.Replace(ItemPage.SECONDARY_TILE, "");
+                    launchParam = launchParam.Replace(SiMemTileFactory.SECONDARY_TILE, "");
                     int index;
                     // und als Integer gespeichert.
                     int.TryParse(launchParam, out index);
@@ -165,6 +166,7 @@ namespace SiMem
             ContainerBuilder builder = new ContainerBuilder();
             builder.RegisterType<DBConnection>().As<IDBConnection>();
             builder.RegisterType<MemoryDataSource>().As<IDataSource<Memory>>();
+            builder.RegisterType<SiMemTileFactory>().As<ISiMemTileFactory>();
             Container = builder.Build();
             IDBConnection dbConn=Container.Resolve<IDBConnection>();
             dbConn.onAppStart();

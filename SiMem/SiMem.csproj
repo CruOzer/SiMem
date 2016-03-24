@@ -107,6 +107,7 @@
     <Compile Include="Database\MemoryDataSource.cs" />
     <Compile Include="DataModel\Memory.cs" />
     <Compile Include="DataModel\MemoryType.cs" />
+    <Compile Include="Logic\SiMemTileFactory.cs" />
     <Compile Include="View\AddItemPage.xaml.cs">
       <DependentUpon>AddItemPage.xaml</DependentUpon>
     </Compile>
@@ -176,9 +177,7 @@
       <Name>SQLite for Windows Phone 8.1</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logic\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

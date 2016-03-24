@@ -53,6 +53,18 @@ namespace SiMem.Data
             Title = _title;
             Text = _text;
         }
+        /// <summary>
+        /// Kopierkonstruktor
+        /// </summary>
+        /// <param name="memory">Zu kopierende Objekt</param>
+        public Memory(Memory memory)
+        {
+            this.Id = memory.Id;
+            this.MemoryType = memory.MemoryType;
+            this.Datum = memory.Datum;
+            this.Text = memory.Text;
+            this.Title= memory.Title;
+        }
 
         private int id;
         /// <summary>

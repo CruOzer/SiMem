@@ -85,11 +85,8 @@ namespace SiMem.Database
             Memory existingMem = conn.Table<Memory>().Where(myMem => myMem.Id.Equals(mem.Id)).FirstOrDefault();
             if (existingMem != null)
             {
-                existingMem.Datum = mem.Datum;
-                existingMem.Id= mem.Id;
-                existingMem.Text = mem.Text;
-                existingMem.Title = mem.Title;
-                existingMem.MemoryType = mem.MemoryType;
+                //Kopieren
+                existingMem = new Memory(mem);
                 conn.RunInTransaction(() =>
                 {
                     conn.Update(existingMem);

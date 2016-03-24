@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="14ccd92a-4b0f-45c1-9f3c-ba349d46d982" Publisher="CN=Chris" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="14ccd92a-4b0f-45c1-9f3c-ba349d46d982" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="45093CruOzer.SiMem" Publisher="CN=7F2F6326-A825-403D-ADA0-8EA3AA0A9ED0" Version="1.1.0.2" />
+  <mp:PhoneIdentity PhoneProductId="ef6dda6d-7628-4b60-a1d5-0cd91cb0e0bd" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>SiMem</DisplayName>
-    <PublisherDisplayName>CruOzer Development</PublisherDisplayName>
+    <PublisherDisplayName>CruOzer</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>

@@ -52,9 +52,8 @@ namespace SiMem
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-
+                   
             Frame rootFrame = Window.Current.Content as Frame;
-
             // App-Initialisierung nicht wiederholen, wenn das Fenster bereits Inhalte enthält.
             // Nur sicherstellen, dass das Fenster aktiv ist.
             if (rootFrame == null)
@@ -110,7 +109,25 @@ namespace SiMem
                 if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
                 {
                     throw new Exception("Failed to create initial page");
-                }                   
+                }
+                // Wenn die App über ein Secondary Tile gestartet wird, wird nach dem Laden der PivotPage direkt
+                // die ItemPage mit dem ausgewählten Tile (dem jeweiligem Memory) gestartet. Ein GoBack zur PivotPage
+                // ist möglich.
+                if (e.Arguments != null && !string.IsNullOrWhiteSpace(e.Arguments.ToString()) && e.Arguments.ToString().Contains(ItemPage.SECONDARY_TILE))
+                {
+                    //Das Argument wird übergeben,
+                    string launchParam = e.Arguments.ToString();
+                    // zurechtgeschnitten
+                    launchParam = launchParam.Replace(ItemPage.SECONDARY_TILE, "");
+                    int index;
+                    // und als Integer gespeichert.
+                    int.TryParse(launchParam, out index);
+                    // Der Integer (die Memory-Id) wird der ItemPage übergeben.
+                    if (!rootFrame.Navigate(typeof(ItemPage), index))
+                    {
+                        throw new Exception("Failed to create item page");
+                    }
+                }
             }
                 // Sicherstellen, dass das aktuelle Fenster aktiv ist.
                 Window.Current.Activate();

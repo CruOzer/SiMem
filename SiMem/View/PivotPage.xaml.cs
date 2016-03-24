@@ -98,28 +98,7 @@ namespace SiMem
                 {
                     return;
                 }
-                /*
-                if (true==false)
-                {
-                    string launchParam = e.NavigationParameter.ToString();
-                    Memory test1 = new Memory();
-                    int index;
-                    launchParam.Replace(ItemPage.SECONDARY_TILE, "");
-                    int.TryParse(launchParam, out index);
-                    test1.Title = "DebugSession7";
-                    test1.Id = memoryDataSource.GetMax() + 1;
-                    test1.Text = index.ToString();
-                    memoryDataSource.Insert(test1);
-                    if (!Frame.Navigate(typeof(ItemPage), index))
-                    {
-                        Memory test2 = new Memory();
-                        test2.Title = "DebugSessionInsert7";
-                        test2.Id = memoryDataSource.GetMax() + 1;
-                        test2.Text = Frame.ToString();
-                        memoryDataSource.Insert(test2);
-                        throw new Exception("Failed to load secondary tile");
-                    }
-                }*/
+          
             }
         }
         /// <summary>

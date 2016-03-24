@@ -9,7 +9,7 @@ namespace SiMem.Database
         /// <summary>
         /// DataBase Name
         /// </summary>
-        public static String DB_NAME = Path.Combine(Path.Combine(ApplicationData.Current.LocalFolder.Path, "simem" + DB_VERSION + ".db"));
+        public static String DB_NAME = Path.Combine(Path.Combine(ApplicationData.Current.RoamingFolder.Path, "simem" + DB_VERSION + ".db"));
         /// <summary>
         /// DatenbankVersion
         /// </summary>

@@ -47,4 +47,11 @@
 
         </Grid>
     </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton x:Uid="EditAppBarButton" x:Name="EditAppBarButton" Label="edit" Icon="Edit" Click="EditAppBarButton_Click" />
+            <AppBarButton x:Uid="DeleteAppBarButton" x:Name="DeleteAppBarButton" Label="delete" Icon="Delete" Click="DeleteAppBarButton_Click" />
+            <AppBarButton x:Uid="PinAppBarButton" x:Name="PinAppBarButton" Label="pin" Icon="Pin" Click="PinAppBarButton_Click" />
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>

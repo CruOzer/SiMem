@@ -16,11 +16,12 @@ namespace SiMem
 {
     public sealed partial class PivotPage : Page
     {
-        private const string RecentGroupName = "Recent";
-        private const string ImportantGroupName = "Important";
-        private const string StandardGroupName = "Standard";
-        private const string OtherGroupName = "Other";
-        private const int RecentMemoriesCount = 5;
+        //Constanten müssen mit der UID, dem Namen und dem Binding der Pivots übereinstimmen
+        private const string RECENTGROUPNAME = "RecentPivot";
+        private const string IMPORTANGROUPNAME = "ImportantPivot";
+        private const string STANDARDGROUPNAME = "StandardPivot";
+        private const string OTHERGROUPNAME = "OtherPivot";
+        private const int RECENTMEMORYCOUNT = 5;
         /// <summary>
         /// Datenbankschnittstelle Memory
         /// </summary>
@@ -97,6 +98,28 @@ namespace SiMem
                 {
                     return;
                 }
+                /*
+                if (true==false)
+                {
+                    string launchParam = e.NavigationParameter.ToString();
+                    Memory test1 = new Memory();
+                    int index;
+                    launchParam.Replace(ItemPage.SECONDARY_TILE, "");
+                    int.TryParse(launchParam, out index);
+                    test1.Title = "DebugSession7";
+                    test1.Id = memoryDataSource.GetMax() + 1;
+                    test1.Text = index.ToString();
+                    memoryDataSource.Insert(test1);
+                    if (!Frame.Navigate(typeof(ItemPage), index))
+                    {
+                        Memory test2 = new Memory();
+                        test2.Title = "DebugSessionInsert7";
+                        test2.Id = memoryDataSource.GetMax() + 1;
+                        test2.Text = Frame.ToString();
+                        memoryDataSource.Insert(test2);
+                        throw new Exception("Failed to load secondary tile");
+                    }
+                }*/
             }
         }
         /// <summary>
@@ -109,6 +132,7 @@ namespace SiMem
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            //TODO
         }
 
         /// <summary>
@@ -173,17 +197,17 @@ namespace SiMem
             switch (type)
             {
                 case MemoryType.STANDARD:
-                    this.DefaultViewModel[StandardGroupName] = memories;
+                    this.DefaultViewModel[STANDARDGROUPNAME] = memories;
                     break;
                 case MemoryType.IMPORTANT:
-                    this.DefaultViewModel[ImportantGroupName] = memories;
+                    this.DefaultViewModel[IMPORTANGROUPNAME] = memories;
                     break;
                 case MemoryType.OTHER:
-                    this.DefaultViewModel[OtherGroupName] = memories;
+                    this.DefaultViewModel[OTHERGROUPNAME] = memories;
                     break;
                 default:
-                    var recentMemories = memoryDataSource.GetRecent(RecentMemoriesCount);
-                    this.DefaultViewModel[RecentGroupName] = recentMemories;
+                    var recentMemories = memoryDataSource.GetRecent(RECENTMEMORYCOUNT);
+                    this.DefaultViewModel[RECENTGROUPNAME] = recentMemories;
                     break;
             }
         }
@@ -205,7 +229,9 @@ namespace SiMem
         /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            // If there is a parameter then continue the navigation to the appropriate page.
             this.navigationHelper.OnNavigatedTo(e);
+
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -222,16 +248,16 @@ namespace SiMem
             PivotItem pivotItem = (PivotItem)sender;
             switch (pivotItem.Name)
             {
-                case "PivotItemImportant":
+                case IMPORTANGROUPNAME:
                     loadMemories(MemoryType.IMPORTANT);
                     break;
-                case "PivotItemStandard":
+                case STANDARDGROUPNAME:
                     loadMemories(MemoryType.STANDARD);
                     break;
-                case "PivotItemOther":
+                case OTHERGROUPNAME:
                     loadMemories(MemoryType.OTHER);
                     break;
-                case "PivotItemRecent":
+                case RECENTGROUPNAME:
                     loadMemories(-1);
                     break;
             }

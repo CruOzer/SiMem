@@ -3,6 +3,7 @@ using SiMem.Common;
 using SiMem.Data;
 using SiMem.Database;
 using SiMem.DataModel;
+using SiMem.View;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -102,20 +103,19 @@ namespace SiMem
 
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
-
+      
                 // Wenn der Navigationsstapel nicht wiederhergestellt wird, zur ersten Seite navigieren
                 // und die neue Seite konfigurieren, indem die erforderlichen Informationen als Navigationsparameter
                 // Parameter.
                 if (!rootFrame.Navigate(typeof(PivotPage), e.Arguments))
                 {
                     throw new Exception("Failed to create initial page");
-                }
+                }                   
             }
-            //Instanziert den Container für Dependency Inject
- 
-            // Sicherstellen, dass das aktuelle Fenster aktiv ist.
-            Window.Current.Activate();
+                // Sicherstellen, dass das aktuelle Fenster aktiv ist.
+                Window.Current.Activate();
         }
+        
 
         /// <summary>
         /// Stellt die Inhaltsübergänge nach dem Start der App wieder her.

@@ -27,11 +27,11 @@
         <Pivot x:Uid="Pivot" Title="SiMem" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
             <!--Pivotelement recent-->
             <PivotItem
-                x:Uid="PivotItemRecent"
-                x:Name="PivotItemRecent"
+                x:Uid="RecentPivot"
+                x:Name="RecentPivot"
                 Margin="19,14.5,0,0"
                 Header="recent"
-                DataContext="{Binding Recent}"
+                DataContext="{Binding RecentPivot}"
                  Loaded="Pivot_Loaded">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
                 <ListView
@@ -70,12 +70,12 @@
             </PivotItem>
             <!--Pivotelement important-->
             <PivotItem
-                x:Uid="PivotItemImportant"
-                x:Name="PivotItemImportant"
+                x:Uid="ImportantPivot"
+                x:Name="ImportantPivot"
                 Margin="19,14.5,0,0"
                 Header="important"
                 Loaded="Pivot_Loaded"
-                DataContext="{Binding Important}">
+                DataContext="{Binding ImportantPivot}">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
                 <ListView
                     ItemsSource="{Binding}"
@@ -113,11 +113,11 @@
             </PivotItem>
             <!--Pivotelement standard-->
             <PivotItem
-                x:Uid="PivotItemStandard"
-                x:Name="PivotItemStandard"
+                x:Uid="StandardPivot"
+                x:Name="StandardPivot"
                 Margin="19,14.5,0,0"
                 Header="standard"
-                DataContext="{Binding Standard}"
+                DataContext="{Binding StandardPivot}"
                 Loaded="Pivot_Loaded">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
                 <ListView
@@ -156,11 +156,11 @@
             </PivotItem>
             <!--Pivotelement other-->
             <PivotItem
-                x:Uid="PivotItemOther"
-                x:Name="PivotItemOther"
+                x:Uid="OtherPivot"
+                x:Name="OtherPivot"
                 Margin="19,14.5,0,0"
                 Header="other"
-                DataContext="{Binding Other}"
+                DataContext="{Binding OtherPivot}"
                 Loaded="Pivot_Loaded">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
                 <ListView

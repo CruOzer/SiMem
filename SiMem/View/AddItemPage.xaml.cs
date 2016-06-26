@@ -48,8 +48,8 @@ namespace SiMem.View
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-            memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
-            siMemTileFactory = App.Container.Resolve<ISiMemTileFactory>();
+            memoryDataSource = DI.Container.Resolve<IDataSource<Memory>>();
+            siMemTileFactory = DI.Container.Resolve<ISiMemTileFactory>();
             instantiateMemoryTypeComboBox();
         }
 

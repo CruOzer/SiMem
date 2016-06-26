@@ -7,10 +7,6 @@ using Windows.UI.Xaml.Navigation;
 using System;
 using Windows.ApplicationModel.Resources;
 using SiMem.View;
-using Windows.UI.StartScreen;
-using NotificationsExtensions.BadgeContent;
-using NotificationsExtensions.TileContent;
-using Windows.UI.Notifications;
 using SiMem.Logic;
 
 // Die Vorlage "Pivotanwendung" ist unter http://go.microsoft.com/fwlink/?LinkID=391641 dokumentiert.
@@ -38,8 +34,8 @@ namespace SiMem
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-            memoryDataSource = App.Container.Resolve<IDataSource<Memory>>();
-            siMemTileFactory = App.Container.Resolve<ISiMemTileFactory>();
+            memoryDataSource = DI.Container.Resolve<IDataSource<Memory>>();
+            siMemTileFactory = DI.Container.Resolve<ISiMemTileFactory>();
         } 
 
         /// <summary>

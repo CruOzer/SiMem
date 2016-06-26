@@ -107,8 +107,10 @@
     <Compile Include="Database\DBStatics.cs" />
     <Compile Include="Database\IDataSource.cs" />
     <Compile Include="Database\MemoryDataSource.cs" />
+    <Compile Include="Database\MemoryTypeDataSource.cs" />
     <Compile Include="DataModel\Memory.cs" />
     <Compile Include="DataModel\MemoryType.cs" />
+    <Compile Include="Logic\DI.cs" />
     <Compile Include="Logic\SiMemTileFactory.cs" />
     <Compile Include="View\AddItemPage.xaml.cs">
       <DependentUpon>AddItemPage.xaml</DependentUpon>

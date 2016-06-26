@@ -15,12 +15,15 @@ namespace SiMem.Database
         /// Datenbank-Connetion
         /// </summary>
         private SQLite.SQLiteConnection conn;
+        private IDataSource<MemoryType> memTypeDS;
+
         /// <summary>
         /// Standardkonstruktur
         /// </summary>
         /// <param name="db">Interface, um die Datenbankverbindung zu gewährleisten</param>
-        public MemoryDataSource(IDBConnection db)
+        public MemoryDataSource(IDBConnection db, IDataSource<MemoryType> memTypeDS)
         {
+            this.memTypeDS = memTypeDS;
             conn = db.getConnection();
         }
 
@@ -69,6 +72,8 @@ namespace SiMem.Database
         public int Insert(Memory mem)
         {
             int result = -1;
+            if (memTypeDS.GetById(mem.MemoryType) == null)
+                throw new ArgumentOutOfRangeException("This memory-type does not exist");
             conn.RunInTransaction(() =>
             {
                 result = conn.Insert(mem);
@@ -85,6 +90,8 @@ namespace SiMem.Database
             Memory existingMem = conn.Table<Memory>().Where(myMem => myMem.Id.Equals(mem.Id)).FirstOrDefault();
             if (existingMem != null)
             {
+                if (memTypeDS.GetById(mem.MemoryType) == null)
+                    throw new ArgumentOutOfRangeException("This memory-type does not exist");
                 //Kopieren
                 existingMem = new Memory(mem);
                 conn.RunInTransaction(() =>
@@ -111,11 +118,11 @@ namespace SiMem.Database
             
         }
 
-     /// <summary>
-     /// Get all memories of one type
-     /// </summary>
-     /// <param name="type">MemoryType</param>
-     /// <returns>List of memories</returns>
+         /// <summary>
+         /// Get all memories of one type
+         /// </summary>
+         /// <param name="type">MemoryType</param>
+         /// <returns>List of memories</returns>
         public List<Memory> GetByType(int type)
         {
             List<Memory> lMemory = new List<Memory>();

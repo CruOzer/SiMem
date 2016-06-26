@@ -11,48 +11,15 @@ namespace SiMem.Data
         /// <summary>
         /// Constructor Instanziiert den Standard Typ mit leerem String  mit Datum = aktuelle Zeit
         /// </summary>
-        public Memory():this(String.Empty,0)
+        public Memory()
         {
+            this.Id = 0;
+            this.MemoryType = 1;
+            this.Title = "";
+            this.Text = "";            
+            this.Datum = DateTime.Now;
         }
-        /// <summary>
-        /// Construct mit Datum = aktuelle Zeit
-        /// </summary>
-        /// <param name="_title">Titel der Memory</param>
-        /// <param name="_groupId">Typ der Memory</param>
-        public Memory(string _title, int _groupId)
-        {
-            Datum = DateTime.Now;
-            Title = _title;
-            MemoryType = _groupId;
-        }
-        /// <summary>
-        /// Constructor mit Datum = aktuelle Zeit
-        /// </summary>
-        /// <param name="_title">Titel der Memory</param>
-        /// <param name="_groupId">Typ der Memory</param>
-        /// <param name="_id">Id der Memory</param>
-        public Memory( string _title, int _groupId, int _id)
-        {
-            Datum = DateTime.Now;
-            Id = _id;
-            MemoryType = _groupId;
-            Title = _title;
-        }
-        /// <summary>
-        /// Constructor mit Datum = aktuelle Zeit
-        /// </summary>
-        /// <param name="_title">Titel der Memory</param>
-        /// <param name="_groupId">Typ der Memory</param>
-        /// <param name="_id">Id der Memory</param>
-        /// <param name="_text">Inhalt der Memory</param>
-        public Memory(string _title, int _groupId, int _id, string _text)
-        {
-            Datum = DateTime.Now;
-            Id = _id;
-            MemoryType = _groupId;
-            Title = _title;
-            Text = _text;
-        }
+
         /// <summary>
         /// Kopierkonstruktor
         /// </summary>
@@ -149,7 +116,7 @@ namespace SiMem.Data
 
             set
             {
-                if (value < 0 && value >= 3)
+                if (value <= 0 )
                 {
                     throw new FormatException("Der MemoryType ist falsch");
                 }

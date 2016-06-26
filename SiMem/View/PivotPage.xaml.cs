@@ -43,8 +43,8 @@ namespace SiMem
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             //Laden der Dependency Injects der Datenbankschnittstellen
-            memoryDataSource =  App.Container.Resolve<IDataSource<Memory>>();
-            siMemTileFactory = App.Container.Resolve<ISiMemTileFactory>();
+            memoryDataSource =  DI.Container.Resolve<IDataSource<Memory>>();
+            siMemTileFactory = DI.Container.Resolve<ISiMemTileFactory>();
             
         }
         

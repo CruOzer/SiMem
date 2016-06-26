@@ -1,10 +1,5 @@
-﻿using Autofac;
-using SiMem.Common;
-using SiMem.Data;
-using SiMem.Database;
-using SiMem.DataModel;
+﻿using SiMem.Common;
 using SiMem.Logic;
-using SiMem.View;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -24,7 +19,7 @@ namespace SiMem
     /// </summary>
     public sealed partial class App : Application
     {
-        public static IContainer Container;
+        
         private TransitionCollection transitions;
 
         /// <summary>
@@ -34,7 +29,7 @@ namespace SiMem
         public App()
         {
             //Instanzieren der Dependency Injects
-            initializeContainer();
+            DI.initializeContainer();
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
         }
@@ -158,18 +153,6 @@ namespace SiMem
             await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
-        /// <summary>
-        /// Instanziert den Dependency Inject Container und beginnt die Datenbankconnection
-        /// </summary>
-        private void initializeContainer()
-        {
-            ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterType<DBConnection>().As<IDBConnection>();
-            builder.RegisterType<MemoryDataSource>().As<IDataSource<Memory>>();
-            builder.RegisterType<SiMemTileFactory>().As<ISiMemTileFactory>();
-            Container = builder.Build();
-            IDBConnection dbConn=Container.Resolve<IDBConnection>();
-            dbConn.onAppStart();
-        }
+   
     }
 }

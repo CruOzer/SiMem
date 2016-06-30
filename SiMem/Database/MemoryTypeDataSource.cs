@@ -38,13 +38,7 @@ namespace SiMem.Database
         /// <param name="mem">Zu löschende Memory</param>
         public void Delete(MemoryType memType)
         {
-            List<Memory> lMemory= memDS.GetByType(memType.Id);
-            foreach (var item in lMemory)
-            {
-                memDS.Delete(item);
-            }
             conn.Delete(memType);
-            //TODO: alle Memories löschen
         }
         /// <summary>
         /// Holt alle Memorytypeobjekte aus der Datenbank, die zu einer Gruppe gehören

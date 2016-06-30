@@ -26,19 +26,9 @@
     <Grid>
         <Pivot x:Uid="Pivot" Title="SiMem" x:Name="pivot" CommonNavigationTransitionInfo.IsStaggerElement="True">
             <!--Pivotelement recent-->
-            <PivotItem
-                x:Uid="RecentPivot"
-                x:Name="RecentPivot"
-                Margin="19,14.5,0,0"
-                Header="recent"
-                DataContext="{Binding RecentPivot}"
-                 Loaded="Pivot_Loaded">
+            <PivotItem x:Uid="RecentPivot" x:Name="RecentPivot" Margin="19,14.5,0,0" Header="recent" DataContext="{Binding RecentPivot}" Loaded="Pivot_Loaded">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
-                <ListView
-                    ItemsSource="{Binding}"
-                    IsItemClickEnabled="True"
-                    ItemClick="ItemView_ItemClick"
-                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                <ListView ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ItemView_ItemClick" ContinuumNavigationTransitionInfo.ExitElementContainer="True">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,9.5">
@@ -53,145 +43,55 @@
                                         <MenuFlyoutItem x:Uid="MenuFlyoutEditDelete" Text="Delete" Click="ItemView_Delete"/>
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemTextBlockStyle}"/>
-                                <TextBlock
-                                    Text="{Binding Text}"
-                                    Pivot.SlideInAnimationGroup="2"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Title}" Pivot.SlideInAnimationGroup="1" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ListViewItemTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Text}" Pivot.SlideInAnimationGroup="2" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
+
             <!--Pivotelement important-->
-            <PivotItem
-                x:Uid="ImportantPivot"
-                x:Name="ImportantPivot"
-                Margin="19,14.5,0,0"
-                Header="important"
-                Loaded="Pivot_Loaded"
-                DataContext="{Binding ImportantPivot}">
+            <PivotItem x:Uid="CategoryPivot" x:Name="CategoryPivot" Margin="19,14.5,0,0" Header="categories"                 Loaded="Pivot_Loaded" DataContext="{Binding CategoryPivot}">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
-                <ListView
-                    ItemsSource="{Binding}"
-                    IsItemClickEnabled="True"
-                    ItemClick="ItemView_ItemClick"
-                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                <ListView ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="CategoryView_ItemClick" ContinuumNavigationTransitionInfo.ExitElementContainer="True">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Margin="0,0,0,9.5">
-                                <i:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="Holding">
-                                        <view:OpenMenuFlyoutAction />
-                                    </core:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>
-                                <FlyoutBase.AttachedFlyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem Text="Edit" Click="ItemView_Edit"/>
-                                        <MenuFlyoutItem Text="Delete" Click="ItemView_Delete"/>
-                                    </MenuFlyout>
-                                </FlyoutBase.AttachedFlyout>
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemTextBlockStyle}"/>
-                                <TextBlock
-                                    Text="{Binding Text}"
-                                    Pivot.SlideInAnimationGroup="2"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
-                            </StackPanel>
+                            <Border Padding="5" BorderBrush="{StaticResource PhoneAccentBrush}" Grid.Row="1" BorderThickness="3,5,3,5" CornerRadius="3" VerticalAlignment="Top">
+                                <StackPanel Margin="0,0,0,9.5">
+                                    <i:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="Holding">
+                                            <view:OpenMenuFlyoutAction />
+                                        </core:EventTriggerBehavior>
+                                    </i:Interaction.Behaviors>
+                                    <FlyoutBase.AttachedFlyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="Edit" Click="CategoryView_Edit"/>
+                                            <MenuFlyoutItem Text="Delete" Click="CategoryView_Delete"/>
+                                        </MenuFlyout>
+                                    </FlyoutBase.AttachedFlyout>
+                                    <TextBlock Text="Category" Pivot.SlideInAnimationGroup="1" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ListViewItemTextBlockStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="5 Notes" Grid.Column="0" Pivot.SlideInAnimationGroup="2" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ControlContextualInfoTextBlockStyle}"/>
+                                        <TextBlock Text="5 Notes" Grid.Column="1" Pivot.SlideInAnimationGroup="2" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ControlContextualInfoTextBlockStyle}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
             <!--Pivotelement standard-->
-            <PivotItem
-                x:Uid="StandardPivot"
-                x:Name="StandardPivot"
-                Margin="19,14.5,0,0"
-                Header="standard"
-                DataContext="{Binding StandardPivot}"
-                Loaded="Pivot_Loaded">
+            <PivotItem x:Uid="SettingsPivot" x:Name="SettingsPivot" Margin="19,14.5,0,0" Header="settings" DataContext="{Binding SettingsPivot}" Loaded="Pivot_Loaded">
                 <!--Doppelzeilige Liste ohne Textumbruch-->
-                <ListView
-                    ItemsSource="{Binding}"
-                    IsItemClickEnabled="True"
-                    ItemClick="ItemView_ItemClick"
-                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                <ListView ItemsSource="{Binding}" IsItemClickEnabled="True" ContinuumNavigationTransitionInfo.ExitElementContainer="True">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,9.5">
-                                <i:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="Holding">
-                                        <view:OpenMenuFlyoutAction />
-                                    </core:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>
-                                <FlyoutBase.AttachedFlyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem Text="Edit" Click="ItemView_Edit"/>
-                                        <MenuFlyoutItem Text="Delete" Click="ItemView_Delete"/>
-                                    </MenuFlyout>
-                                </FlyoutBase.AttachedFlyout>
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemTextBlockStyle}"/>
-                                <TextBlock
-                                    Text="{Binding Text}"
-                                    Pivot.SlideInAnimationGroup="2"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </PivotItem>
-            <!--Pivotelement other-->
-            <PivotItem
-                x:Uid="OtherPivot"
-                x:Name="OtherPivot"
-                Margin="19,14.5,0,0"
-                Header="other"
-                DataContext="{Binding OtherPivot}"
-                Loaded="Pivot_Loaded">
-                <!--Doppelzeilige Liste ohne Textumbruch-->
-                <ListView
-                    ItemsSource="{Binding}"
-                    IsItemClickEnabled="True"
-                    ItemClick="ItemView_ItemClick"
-                    ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,9.5">
-                                <i:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="Holding">
-                                        <view:OpenMenuFlyoutAction />
-                                    </core:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>
-                                <FlyoutBase.AttachedFlyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem Text="Edit" Click="ItemView_Edit"/>
-                                        <MenuFlyoutItem Text="Delete" Click="ItemView_Delete"/>
-                                    </MenuFlyout>
-                                </FlyoutBase.AttachedFlyout>
-                                <TextBlock
-                                    Text="{Binding Title}"
-                                    Pivot.SlideInAnimationGroup="1"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemTextBlockStyle}"/>
-                                <TextBlock
-                                    Text="{Binding Text}"
-                                    Pivot.SlideInAnimationGroup="2"
-                                    CommonNavigationTransitionInfo.IsStaggerElement="True"
-                                    Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -199,8 +99,6 @@
             </PivotItem>
         </Pivot>
     </Grid>
-
-   
     <Page.BottomAppBar>
         <CommandBar>
             <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Label="add" Icon="Add" Click="AddAppBarButton_Click" />

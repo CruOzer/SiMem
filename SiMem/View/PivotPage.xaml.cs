@@ -5,6 +5,7 @@ using SiMem.DataModel;
 using SiMem.Logic;
 using SiMem.View;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
@@ -19,14 +20,14 @@ namespace SiMem
     {
         //Constanten müssen mit der UID, dem Namen und dem Binding der Pivots übereinstimmen
         private const string RECENTGROUPNAME = "RecentPivot";
-        private const string IMPORTANGROUPNAME = "ImportantPivot";
-        private const string STANDARDGROUPNAME = "StandardPivot";
-        private const string OTHERGROUPNAME = "OtherPivot";
+        private const string SETTINGSGROUPNAME = "SettingsPivot";
+        private const string CATEGORYGROUPNAME = "CategoryPivot";
         private const int RECENTMEMORYCOUNT = 5;
         /// <summary>
         /// Datenbankschnittstelle Memory
         /// </summary>
         private IDataSource<Memory> memoryDataSource;
+        private IDataSource<MemoryType> memoryTypeDataSource;
         private ISiMemTileFactory siMemTileFactory;
 
         private readonly NavigationHelper navigationHelper;
@@ -44,6 +45,7 @@ namespace SiMem
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             //Laden der Dependency Injects der Datenbankschnittstellen
             memoryDataSource =  DI.Container.Resolve<IDataSource<Memory>>();
+            memoryTypeDataSource = DI.Container.Resolve<IDataSource<MemoryType>>();
             siMemTileFactory = DI.Container.Resolve<ISiMemTileFactory>();
             
         }
@@ -78,30 +80,7 @@ namespace SiMem
         /// beibehalten wurde. Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            if (e.NavigationParameter != null)
-            {
-                try {
-                    //Übergabe der Types
-                    int[] types = (int[])e.NavigationParameter;
-                    //und neuladen der Views
-                    if (types[0] != types[1])
-                    {
-                        loadMemories(types[0]);
-                        loadMemories(types[1]);
-                    }
-                    else
-                    {
-                        loadMemories(types[0]);
-                    }
-                    loadMemories(-1);
-                    Debug.WriteLine("Neuladen der Views");
-                }
-                catch (InvalidCastException)
-                {
-                    return;
-                }
-          
-            }
+            loadRecentMemories();
         }
         /// <summary>
         /// Behält den dieser Seite zugeordneten Zustand bei, wenn die Anwendung angehalten oder
@@ -153,6 +132,7 @@ namespace SiMem
             {
                 throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
             }
+            loadCategories();
         }
         /// <summary>
         /// Löscht das ausgewählte Item aus der Datenbank und aus der Liste
@@ -166,33 +146,71 @@ namespace SiMem
 
             await siMemTileFactory.DeleteTile(memory);
             //Reload the Memories within the type
-            loadMemories(memory.MemoryType);
+            //loadMemories(memory.MemoryType);
             //Reload the RecentMemories
-            loadMemories(-1);
-       }
+            loadRecentMemories();
+        }
+        /// <summary>
+        /// Wird aufgerufen, wenn auf ein Element innerhalb eines Abschnitts geklickt wird. Lädt die entsprechende Seite
+        /// </summary>
+        private void CategoryView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // Zur entsprechenden Zielseite navigieren und die neue Seite konfigurieren,
+            // indem die erforderlichen Informationen als Navigationsparameter übergeben werden
+            var itemId = ((MemoryType)e.ClickedItem).Id;
+            if (!Frame.Navigate(typeof(CategoryPage), itemId))
+            {
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+            }
+        }
+        /// <summary>
+        /// Lädt ein Dialog und editiert bei Erfolg das Listenelement.
+        /// </summary>
+        private void CategoryView_Edit(object sender, RoutedEventArgs e)
+        {
+            // Zur entsprechenden Zielseite navigieren und die neue Seite konfigurieren,
+            // indem die erforderlichen Informationen als Navigationsparameter übergeben werden
+            var memoryType = (MemoryType)(e.OriginalSource as FrameworkElement).DataContext;
+            if (!Frame.Navigate(typeof(AddCategoryPage), memoryType.Id))
+            {
+                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
+            }
+            loadCategories();
+        }
+        /// <summary>
+        /// Löscht die auswählte Kategorie und alle Items aus der Datenbank und aus der Liste
+        /// </summary>
+        private async void CategoryView_Delete(object sender, RoutedEventArgs e)
+        {
+            // Löscht das momentan ausgewählt Element, sowohl aus der Datenbank, als auch aus der Liste
+            var memoryType = (MemoryType)(e.OriginalSource as FrameworkElement).DataContext;
+            //Delete Memories within the category
+            List<Memory> lMemory = memoryDataSource.GetByType(memoryType.Id);
+            foreach (var item in lMemory)
+            {
+                memoryDataSource.Delete(item);
+                await siMemTileFactory.DeleteTile(item);
+            }
+            //Delete Category
+            memoryTypeDataSource.Delete(memoryType);
+            //Reload the Memories within the type
+            loadCategories();
+        }
 
         /// <summary>
-        /// Laden alle Memories
+        /// Lädt die letzten Memories
         /// </summary>
-        private void loadMemories(int type)
+        private void loadRecentMemories()
         {
-            var memories = memoryDataSource.GetByType(type);
-            switch (type)
-            {
-                case MemoryType.STANDARD:
-                    this.DefaultViewModel[STANDARDGROUPNAME] = memories;
-                    break;
-                case MemoryType.IMPORTANT:
-                    this.DefaultViewModel[IMPORTANGROUPNAME] = memories;
-                    break;
-                case MemoryType.OTHER:
-                    this.DefaultViewModel[OTHERGROUPNAME] = memories;
-                    break;
-                default:
-                    var recentMemories = memoryDataSource.GetRecent(RECENTMEMORYCOUNT);
-                    this.DefaultViewModel[RECENTGROUPNAME] = recentMemories;
-                    break;
-            }
+            var recentMemories = memoryDataSource.GetRecent(RECENTMEMORYCOUNT);
+            this.DefaultViewModel[RECENTGROUPNAME] = recentMemories;
+        }
+        /// <summary>
+        /// Lädt alle Kategorien
+        /// </summary>
+        private void loadCategories()
+        {
+            this.DefaultViewModel[CATEGORYGROUPNAME] = memoryTypeDataSource.GetAll();
         }
 
         #region NavigationHelper-Registrierung
@@ -231,17 +249,13 @@ namespace SiMem
             PivotItem pivotItem = (PivotItem)sender;
             switch (pivotItem.Name)
             {
-                case IMPORTANGROUPNAME:
-                    loadMemories(MemoryType.IMPORTANT);
+                case CATEGORYGROUPNAME:
+                    loadCategories();
                     break;
-                case STANDARDGROUPNAME:
-                    loadMemories(MemoryType.STANDARD);
-                    break;
-                case OTHERGROUPNAME:
-                    loadMemories(MemoryType.OTHER);
+                case SETTINGSGROUPNAME:
                     break;
                 case RECENTGROUPNAME:
-                    loadMemories(-1);
+                    loadRecentMemories();
                     break;
             }
         }

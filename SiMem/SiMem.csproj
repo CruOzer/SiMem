@@ -82,9 +82,17 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Page Include="View\AddCategoryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\AddItemPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CategoryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ItemPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -112,8 +120,14 @@
     <Compile Include="DataModel\MemoryType.cs" />
     <Compile Include="Logic\DI.cs" />
     <Compile Include="Logic\SiMemTileFactory.cs" />
+    <Compile Include="View\AddCategoryPage.xaml.cs">
+      <DependentUpon>AddCategoryPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\AddItemPage.xaml.cs">
       <DependentUpon>AddItemPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\CategoryPage.xaml.cs">
+      <DependentUpon>CategoryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ItemPage.xaml.cs">
       <DependentUpon>ItemPage.xaml</DependentUpon>

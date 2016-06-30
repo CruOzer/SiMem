@@ -1,0 +1,69 @@
+﻿<Page
+    x:Class="SiMem.CategoryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SiMem"
+    xmlns:data="using:SiMem.Data"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core" 
+    xmlns:i="using:Microsoft.Xaml.Interactivity"  
+    xmlns:view="using:SiMem.View"
+    mc:Ignorable="d"
+    DataContext="{Binding DefaultViewModel.Category, RelativeSource={RelativeSource Self}}"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <ContinuumNavigationTransitionInfo/>
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- Titelbereich -->
+        <StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock x:Uid="Header" Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <TextBlock Text="{Binding Name}" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,-6.5,0,26.5" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+        </StackPanel>
+        <ListView ItemsSource="{Binding DefaultViewModel.Items}" IsItemClickEnabled="True" ItemClick="ItemView_ItemClick" ContinuumNavigationTransitionInfo.ExitElementContainer="True" Grid.Row="1">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0,0,0,9.5">
+                        <i:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Holding">
+                                <view:OpenMenuFlyoutAction />
+                            </core:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem x:Uid="MenuFlyoutEdit"  Text="Edit" Click="ItemView_Edit"/>
+                                <MenuFlyoutItem x:Uid="MenuFlyoutEditDelete" Text="Delete" Click="ItemView_Delete"/>
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <TextBlock Text="{Binding Title}" Pivot.SlideInAnimationGroup="1" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ListViewItemTextBlockStyle}"/>
+                        <TextBlock Text="{Binding Text}" Pivot.SlideInAnimationGroup="2" CommonNavigationTransitionInfo.IsStaggerElement="True" Style="{StaticResource ListViewItemContentTextBlockStyle}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton x:Uid="EditAppBarButton" x:Name="EditAppBarButton" Label="edit" Icon="Edit" Click="EditAppBarButton_Click" />
+            <AppBarButton x:Uid="DeleteAppBarButton" x:Name="DeleteAppBarButton" Label="delete" Icon="Delete" Click="DeleteAppBarButton_Click" />
+            <AppBarButton x:Uid="PinAppBarButton" x:Name="PinAppBarButton" Label="pin" Icon="Pin" Click="PinAppBarButton_Click" />
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>
